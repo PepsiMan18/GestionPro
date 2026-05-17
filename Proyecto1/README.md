@@ -1,46 +1,51 @@
-# 🏢 Proyecto: Gestión de Inmuebles (Panel de Control)
+# 🏢 Proyecto: GestiónPro (Sistema de Gestión Inmobiliaria)
 
-¡Bienvenido al proyecto! Este es un panel de administración moderno construido con **React** y **Vite**, diseñado para gestionar alquileres, inquilinos, servicios y facturación.
+¡Bienvenido al proyecto! Este es un sistema de administración moderno de nivel empresarial construido con **React** y **Vite**. Está diseñado para gestionar un catálogo de inmuebles (locales comerciales, tiendas, oficinas), la cartera de clientes (inquilinos) y el ciclo de vida de los contratos de alquiler.
 
-## 🚀 Cómo ejecutar este proyecto por primera vez
+## 🚀 Cómo ejecutar este proyecto
 
-Si acabas de descargar o clonar este proyecto en tu computadora, sigue estos pasos exactos para hacerlo funcionar:
+Si acabas de clonar este repositorio, sigue estos pasos exactos:
 
 ### Requisitos Previos
-Debes tener instalado **Node.js** en tu computadora. (Si no lo tienes, descárgalo de [nodejs.org](https://nodejs.org/)).
+Debes tener instalado **Node.js** (Versión 18+ recomendada). Descárgalo de [nodejs.org](https://nodejs.org/).
 
 ### Pasos de Instalación
 
-1. **Abrir la Consola en la Carpeta Correcta**
-   Abre tu terminal (o consola de VS Code) y asegúrate de estar dentro de la carpeta del proyecto (la carpeta que contiene este archivo).
+1. **Abre la terminal** y asegúrate de estar dentro de la carpeta raíz del proyecto (la carpeta que contiene el archivo `package.json`).
    ```bash
    cd Proyecto1
    ```
 
-2. **Instalar las Dependencias (Los "Materiales" de Construcción)**
-   Al descargar un proyecto, la carpeta pesada de librerías (`node_modules`) nunca se incluye. Tienes que decirle a tu computadora que las descargue:
+2. **Instala las dependencias**:
    ```bash
    npm install
    ```
-   *(Espera a que termine, puede tardar un par de minutos).*
 
-3. **Encender el Servidor**
-   Una vez terminada la instalación, arranca el proyecto con:
+3. **Inicia el servidor de desarrollo local**:
    ```bash
    npm run dev
    ```
 
-4. **Abrir en el Navegador**
-   La consola te mostrará un enlace (generalmente `http://localhost:5173/`). Dale clic o cópialo y pégalo en tu navegador Chrome/Edge/Safari.
+4. **Abre el proyecto en el navegador**:
+   El terminal te mostrará un enlace (usualmente `http://localhost:5173/`).
 
 ---
 
-## 🏗️ Tecnologías Utilizadas
+## 📦 Módulos Implementados
 
-* **React 18**: Librería principal para construir la interfaz.
-* **Vite**: Motor de construcción y servidor de desarrollo ultra-rápido.
-* **React Router DOM**: Para la navegación rápida entre páginas (Menú lateral).
-* **Phosphor Icons**: Librería de iconos moderna.
-* **CSS Puro (Vanilla)**: Variables globales y diseño sin depender de librerías externas pesadas.
+El sistema está dividido en los siguientes submódulos funcionales:
 
-¡Listo para programar! 💻
+*   📊 **Dashboard**: Métricas en tiempo real sobre la ocupación del portafolio.
+*   🏢 **Inmuebles (HU-001)**: Mantenimiento del catálogo de propiedades, tipos de local y control de estados (Disponible, Ocupado, Mantenimiento).
+*   👥 **Inquilinos (HU-002)**: Directorio de clientes con clasificación para Personas Naturales y Jurídicas, junto a su historial de contacto.
+*   📝 **Contratos (HU-05 a HU-09)**: Motor lógico que vincula inmuebles con inquilinos. Permite la generación, cálculo dinámico de vigencia, renovaciones y finalización de contratos.
+
+---
+
+## 🏗️ Stack Tecnológico
+
+*   **Frontend**: React 18
+*   **Build Tool**: Vite
+*   **Enrutamiento**: React Router DOM v6
+*   **UI/UX**: Custom Vanilla CSS (Sistema escalable por CSS Variables) y Phosphor Icons.
+*   **Arquitectura**: Single Page Application (SPA) modularizada.
