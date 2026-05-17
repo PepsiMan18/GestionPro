@@ -1,16 +1,46 @@
-# React + Vite
+# 🏢 Proyecto: Gestión de Inmuebles (Panel de Control)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+¡Bienvenido al proyecto! Este es un panel de administración moderno construido con **React** y **Vite**, diseñado para gestionar alquileres, inquilinos, servicios y facturación.
 
-Currently, two official plugins are available:
+## 🚀 Cómo ejecutar este proyecto por primera vez
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Si acabas de descargar o clonar este proyecto en tu computadora, sigue estos pasos exactos para hacerlo funcionar:
 
-## React Compiler
+### Requisitos Previos
+Debes tener instalado **Node.js** en tu computadora. (Si no lo tienes, descárgalo de [nodejs.org](https://nodejs.org/)).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Pasos de Instalación
 
-## Expanding the ESLint configuration
+1. **Abrir la Consola en la Carpeta Correcta**
+   Abre tu terminal (o consola de VS Code) y asegúrate de estar dentro de la carpeta del proyecto (la carpeta que contiene este archivo).
+   ```bash
+   cd Proyecto1
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Instalar las Dependencias (Los "Materiales" de Construcción)**
+   Al descargar un proyecto, la carpeta pesada de librerías (`node_modules`) nunca se incluye. Tienes que decirle a tu computadora que las descargue:
+   ```bash
+   npm install
+   ```
+   *(Espera a que termine, puede tardar un par de minutos).*
+
+3. **Encender el Servidor**
+   Una vez terminada la instalación, arranca el proyecto con:
+   ```bash
+   npm run dev
+   ```
+
+4. **Abrir en el Navegador**
+   La consola te mostrará un enlace (generalmente `http://localhost:5173/`). Dale clic o cópialo y pégalo en tu navegador Chrome/Edge/Safari.
+
+---
+
+## 🏗️ Tecnologías Utilizadas
+
+* **React 18**: Librería principal para construir la interfaz.
+* **Vite**: Motor de construcción y servidor de desarrollo ultra-rápido.
+* **React Router DOM**: Para la navegación rápida entre páginas (Menú lateral).
+* **Phosphor Icons**: Librería de iconos moderna.
+* **CSS Puro (Vanilla)**: Variables globales y diseño sin depender de librerías externas pesadas.
+
+¡Listo para programar! 💻

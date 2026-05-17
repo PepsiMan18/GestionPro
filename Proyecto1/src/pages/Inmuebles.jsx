@@ -24,15 +24,13 @@ const Inmuebles = ({ listaInmuebles, setListaInmuebles }) => {
       setListaInmuebles(prev => prev.map(inm => inm.id === datosFormulario.id ? { 
         ...inm, 
         ...datosFormulario, 
-        alquiler: alquilerFormateado,
-        proximosPagos: datosFormulario.estado === 'Con Deuda' ? inm.proximosPagos : 'Al Día'
+        alquiler: alquilerFormateado
       } : inm));
     } else {
       const nuevoInmueble = {
         ...datosFormulario,
         id: Date.now(),
         alquiler: alquilerFormateado,
-        proximosPagos: datosFormulario.estado === 'Ocupado' ? 'Al Día' : '-',
         imagen: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=200&h=150'
       };
       setListaInmuebles(prev => [nuevoInmueble, ...prev]);

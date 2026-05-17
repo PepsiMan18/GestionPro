@@ -29,6 +29,12 @@ const Sidebar = () => {
             </NavLink>
           </li>
           <li>
+            <NavLink to="/contratos" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+              <i className="ph ph-file-text sidebar-icon"></i>
+              Contratos
+            </NavLink>
+          </li>
+          <li>
             <NavLink to="/servicios" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
               <i className="ph ph-drop sidebar-icon"></i>
               Servicios (Agua/Luz)
@@ -36,14 +42,20 @@ const Sidebar = () => {
           </li>
           <li>
             <NavLink to="/facturacion" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
-              <i className="ph ph-receipt sidebar-icon"></i>
-              Pagos y Facturación
+              <i className="ph ph-money sidebar-icon"></i>
+              Pagos y Cobranzas
             </NavLink>
           </li>
           <li>
             <NavLink to="/reportes" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
               <i className="ph ph-chart-line-up sidebar-icon"></i>
               Reportes
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/configuracion" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+              <i className="ph ph-gear sidebar-icon"></i>
+              Configuración
             </NavLink>
           </li>
         </ul>

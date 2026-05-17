@@ -5,9 +5,10 @@ const obtenerEtiquetaEstado = (estado) => {
     case 'Ocupado':
       return <span className="badge badge-occupied">Ocupado</span>;
     case 'Desocupado':
-      return <span className="badge badge-vacant">Desocupado</span>;
-    case 'Con Deuda':
-      return <span className="badge badge-debt">Con Deuda</span>;
+    case 'Disponible':
+      return <span className="badge badge-vacant">Disponible</span>;
+    case 'Mantenimiento':
+      return <span className="badge badge-debt">Mantenimiento</span>;
     default:
       return <span className="badge">{estado}</span>;
   }
@@ -27,11 +28,12 @@ const TablaInmuebles = ({ listaInmuebles = [], alEditarInmueble }) => {
         <table>
           <thead>
             <tr>
-              <th>Dirección</th>
+              <th>Código</th>
+              <th>Descripción</th>
               <th>Tipo</th>
+              <th>Sector/Zona</th>
               <th>Estado</th>
-              <th>Alquiler Mensual</th>
-              <th>Próximos Pagos / Servicios</th>
+              <th>Área</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -39,27 +41,20 @@ const TablaInmuebles = ({ listaInmuebles = [], alEditarInmueble }) => {
             {listaInmuebles.map((item) => (
               <tr key={item.id}>
                 <td>
+                  <span style={{ fontWeight: 600 }}>{item.codigo}</span>
+                </td>
+                <td>
                   <div className="property-cell">
-                    <img src={item.imagen} alt={item.direccion} className="property-img" />
                     <div>
-                      <span className="property-address">{item.direccion}</span>
-                      <span className="property-city">{item.ciudad}</span>
+                      <span className="property-address">{item.descripcion}</span>
+                      <span className="property-city">{item.alquiler}</span>
                     </div>
                   </div>
                 </td>
                 <td>{item.tipo}</td>
+                <td>{item.sector}</td>
                 <td>{obtenerEtiquetaEstado(item.estado)}</td>
-                <td className="price-text">{item.alquiler}</td>
-                <td>
-                  {item.estado === 'Con Deuda' ? (
-                    <span className="payment-alert">
-                      <i className="ph-fill ph-warning-circle"></i>
-                      {item.proximosPagos}
-                    </span>
-                  ) : (
-                    <span style={{ fontSize: '0.875rem' }}>{item.proximosPagos}</span>
-                  )}
-                </td>
+                <td>{item.area}</td>
                 <td>
                   <button 
                     className="btn-outline" 

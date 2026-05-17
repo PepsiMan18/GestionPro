@@ -6,37 +6,43 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
 
   const [formulario, setFormulario] = useState({
     id: null,
-    direccion: '',
-    ciudad: '',
-    tipo: 'Departamento',
+    codigo: '',
+    descripcion: '',
+    tipo: 'Local Comercial',
+    sector: 'Mercado',
     alquiler: '',
-    estado: 'Desocupado',
-    inquilino: '',
-    diaCobro: ''
+    estado: 'Disponible',
+    area: '',
+    piso: '',
+    incluyeServicios: 'N'
   });
 
   useEffect(() => {
     if (datosInmueble) {
       setFormulario({
         id: datosInmueble.id || null,
-        direccion: datosInmueble.direccion || '',
-        ciudad: datosInmueble.ciudad || '',
-        tipo: datosInmueble.tipo || 'Departamento',
+        codigo: datosInmueble.codigo || '',
+        descripcion: datosInmueble.descripcion || '',
+        tipo: datosInmueble.tipo || 'Local Comercial',
+        sector: datosInmueble.sector || 'Mercado',
         alquiler: datosInmueble.alquiler ? datosInmueble.alquiler.replace('$', '').replace(',', '') : '',
-        estado: datosInmueble.estado === 'Con Deuda' ? 'Ocupado' : (datosInmueble.estado || 'Desocupado'),
-        inquilino: datosInmueble.inquilino || '',
-        diaCobro: datosInmueble.diaCobro || ''
+        estado: datosInmueble.estado || 'Disponible',
+        area: datosInmueble.area || '',
+        piso: datosInmueble.piso || '',
+        incluyeServicios: datosInmueble.incluyeServicios || 'N'
       });
     } else {
       setFormulario({
         id: null,
-        direccion: '',
-        ciudad: '',
-        tipo: 'Departamento',
+        codigo: '',
+        descripcion: '',
+        tipo: 'Local Comercial',
+        sector: 'Mercado',
         alquiler: '',
-        estado: 'Desocupado',
-        inquilino: '',
-        diaCobro: ''
+        estado: 'Disponible',
+        area: '',
+        piso: '',
+        incluyeServicios: 'N'
       });
     }
   }, [datosInmueble, abierto]);
@@ -69,29 +75,49 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
           <div className="modal-body">
             <div className="form-grid">
               
-              <div className="form-group full-width">
-                <label className="form-label">Dirección (Avenida / Calle)</label>
+              <div className="form-group">
+                <label className="form-label">Código del Inmueble</label>
                 <input 
                   type="text" 
-                  name="direccion" 
+                  name="codigo" 
                   className="form-control" 
-                  placeholder="Ej. Av. Las Gardenias 456" 
-                  value={formulario.direccion}
+                  placeholder="Ej. A-15" 
+                  value={formulario.codigo}
                   onChange={manejarCambio}
                   required 
                 />
               </div>
 
               <div className="form-group">
-                <label className="form-label">Ciudad</label>
+                <label className="form-label">Descripción</label>
                 <input 
                   type="text" 
-                  name="ciudad" 
+                  name="descripcion" 
                   className="form-control" 
-                  placeholder="Ej. Lima" 
-                  value={formulario.ciudad}
+                  placeholder="Ej. LOCAL A-15" 
+                  value={formulario.descripcion}
                   onChange={manejarCambio}
+                  required 
                 />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Sector / Zona</label>
+                <select 
+                  name="sector" 
+                  className="form-control"
+                  value={formulario.sector}
+                  onChange={manejarCambio}
+                >
+                  <option value="Mercado">Mercado</option>
+                  <option value="Galería">Galería</option>
+                  <option value="Sección M">Sección M</option>
+                  <option value="Sección R">Sección R</option>
+                  <option value="Sección S">Sección S</option>
+                  <option value="Tiendas Externas">Tiendas Externas</option>
+                  <option value="Oficinas">Oficinas</option>
+                  <option value="Módulos">Módulos</option>
+                </select>
               </div>
 
               <div className="form-group">
@@ -102,14 +128,40 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
                   value={formulario.tipo}
                   onChange={manejarCambio}
                 >
-                  <option value="Departamento">Departamento</option>
-                  <option value="Casa">Casa</option>
                   <option value="Local Comercial">Local Comercial</option>
+                  <option value="Oficina">Oficina</option>
+                  <option value="Tienda Externa">Tienda Externa</option>
+                  <option value="Puesto">Puesto</option>
+                  <option value="Módulo">Módulo</option>
                 </select>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Alquiler Mensual ($)</label>
+                <label className="form-label">Área (Metraje)</label>
+                <input 
+                  type="text" 
+                  name="area" 
+                  className="form-control" 
+                  placeholder="Ej. 20 m2" 
+                  value={formulario.area}
+                  onChange={manejarCambio}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Piso</label>
+                <input 
+                  type="text" 
+                  name="piso" 
+                  className="form-control" 
+                  placeholder="Ej. 1" 
+                  value={formulario.piso}
+                  onChange={manejarCambio}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Precio Alquiler Base ($)</label>
                 <input 
                   type="number" 
                   name="alquiler" 
@@ -129,41 +181,25 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
                   value={formulario.estado}
                   onChange={manejarCambio}
                 >
-                  <option value="Desocupado">Desocupado (Disponible)</option>
-                  <option value="Ocupado">Ocupado (Alquilado)</option>
-                  <option value="En Mantenimiento">En Mantenimiento</option>
+                  <option value="Disponible">Disponible</option>
+                  <option value="Ocupado">Ocupado</option>
+                  <option value="Mantenimiento">Mantenimiento</option>
+                  <option value="Reservado">Reservado</option>
                 </select>
               </div>
 
-              {formulario.estado === 'Ocupado' && (
-                <>
-                  <div className="form-group">
-                    <label className="form-label">Inquilino Asignado</label>
-                    <input 
-                      type="text" 
-                      name="inquilino" 
-                      className="form-control" 
-                      placeholder="Nombre del inquilino" 
-                      value={formulario.inquilino}
-                      onChange={manejarCambio}
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label">Día de Cobro (1-31)</label>
-                    <input 
-                      type="number" 
-                      min="1" 
-                      max="31" 
-                      name="diaCobro" 
-                      className="form-control" 
-                      placeholder="Ej. 15" 
-                      value={formulario.diaCobro}
-                      onChange={manejarCambio}
-                    />
-                  </div>
-                </>
-              )}
+              <div className="form-group full-width">
+                <label className="form-label">¿Incluye Servicios Básicos?</label>
+                <select 
+                  name="incluyeServicios" 
+                  className="form-control"
+                  value={formulario.incluyeServicios}
+                  onChange={manejarCambio}
+                >
+                  <option value="S">Sí, incluye servicios</option>
+                  <option value="N">No incluye servicios</option>
+                </select>
+              </div>
 
             </div>
           </div>
