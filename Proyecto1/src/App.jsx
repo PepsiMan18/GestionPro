@@ -10,6 +10,7 @@ import Facturacion from './pages/Facturacion';
 import Contratos from './pages/Contratos';
 import Configuracion from './pages/Configuracion';
 import Reportes from './pages/Reportes';
+import Login from './pages/Login';
 import './App.css';
 
 const inmueblesIniciales = [
@@ -103,9 +104,14 @@ const contratosIniciales = [
 ];
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [listaInmuebles, setListaInmuebles] = React.useState(inmueblesIniciales);
   const [listaInquilinos, setListaInquilinos] = React.useState(inquilinosIniciales);
   const [listaContratos, setListaContratos] = React.useState(contratosIniciales);
+
+  if (!isAuthenticated) {
+    return <Login onLogin={() => setIsAuthenticated(true)} />;
+  }
 
   return (
     <div className="layout">
