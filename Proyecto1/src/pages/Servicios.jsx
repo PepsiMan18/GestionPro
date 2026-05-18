@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TablaServicios from '../components/TablaServicios';
+import ModalServicio from '../components/ModalServicio';
 import './PanelControl.css';
 
-const Servicios = () => {
+const Servicios = ({ listaServicios, setListaServicios, listaContratos, listaInmuebles }) => {
+  const [modalAbierto, setModalAbierto] = useState(false);
+
+  const handleGuardarServicio = (nuevoServicio) => {
+    // Generar nuevo ID
+    const newId = listaServicios.length > 0 ? Math.max(...listaServicios.map(s => s.id)) + 1 : 1;
+    setListaServicios([...listaServicios, { ...nuevoServicio, id: newId }]);
+    setModalAbierto(false);
+  };
+
+  // Calcular métricas
+  const totalMontoPendiente = listaServicios
+    .filter(s => s.estado === 'Pendiente')
+    .reduce((sum, s) => sum + s.monto, 0);
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -9,60 +25,59 @@ const Servicios = () => {
           <h1 className="dashboard-title">Control de Servicios (Agua/Luz)</h1>
           <p style={{color: 'var(--text-muted)', marginTop: '0.5rem'}}>Registra las lecturas de medidores y calcula los cobros de servicios.</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => setModalAbierto(true)}>
           <i className="ph ph-drop"></i>
           Registrar Lectura
         </button>
       </div>
 
-      <div className="table-container">
-        <div className="table-header">
-          <h2 className="table-title">Lecturas del Mes Actual</h2>
+      <div className="summary-cards" style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem'}}>
+        <div className="summary-card">
+          <div className="summary-icon" style={{background: 'rgba(2, 132, 199, 0.1)', color: '#0284c7'}}>
+            <i className="ph-fill ph-drop"></i>
+          </div>
+          <div className="summary-info">
+            <h3>Agua Pendiente</h3>
+            <p className="summary-number">
+              S/ {listaServicios.filter(s => s.tipo === 'Agua' && s.estado === 'Pendiente').reduce((acc, curr) => acc + curr.monto, 0).toFixed(2)}
+            </p>
+          </div>
         </div>
-        <div className="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Inmueble</th>
-                <th>Servicio</th>
-                <th>Lectura Anterior</th>
-                <th>Lectura Actual</th>
-                <th>Consumo</th>
-                <th>Monto a Cobrar</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{fontWeight: '600'}}>Calle Los Pinos 123</td>
-                <td>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#0284c7'}}>
-                    <i className="ph-fill ph-drop"></i> Agua
-                  </div>
-                </td>
-                <td>120 m³</td>
-                <td>125 m³</td>
-                <td>5 m³</td>
-                <td className="price-text">$15.00</td>
-                <td><span className="badge badge-alert">Pendiente</span></td>
-              </tr>
-              <tr>
-                <td style={{fontWeight: '600'}}>Av. Las Gardenias 456</td>
-                <td>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#eab308'}}>
-                    <i className="ph-fill ph-lightning"></i> Luz
-                  </div>
-                </td>
-                <td>450 kWh</td>
-                <td>510 kWh</td>
-                <td>60 kWh</td>
-                <td className="price-text">$42.00</td>
-                <td><span className="badge badge-occupied">Facturado</span></td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="summary-card">
+          <div className="summary-icon" style={{background: 'rgba(234, 179, 8, 0.1)', color: '#eab308'}}>
+            <i className="ph-fill ph-lightning"></i>
+          </div>
+          <div className="summary-info">
+            <h3>Luz Pendiente</h3>
+            <p className="summary-number">
+              S/ {listaServicios.filter(s => s.tipo === 'Luz' && s.estado === 'Pendiente').reduce((acc, curr) => acc + curr.monto, 0).toFixed(2)}
+            </p>
+          </div>
+        </div>
+        <div className="summary-card">
+          <div className="summary-icon" style={{background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444'}}>
+            <i className="ph-fill ph-warning-circle"></i>
+          </div>
+          <div className="summary-info">
+            <h3>Total por Cobrar</h3>
+            <p className="summary-number">S/ {totalMontoPendiente.toFixed(2)}</p>
+          </div>
         </div>
       </div>
+
+      <TablaServicios 
+        servicios={listaServicios} 
+        contratos={listaContratos} 
+        inmuebles={listaInmuebles} 
+      />
+
+      <ModalServicio
+        isOpen={modalAbierto}
+        onClose={() => setModalAbierto(false)}
+        alGuardar={handleGuardarServicio}
+        contratos={listaContratos}
+        inmuebles={listaInmuebles}
+      />
     </div>
   );
 };

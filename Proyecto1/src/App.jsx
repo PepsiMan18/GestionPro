@@ -103,11 +103,37 @@ const contratosIniciales = [
   }
 ];
 
+const serviciosIniciales = [
+  {
+    id: 1,
+    idContrato: 1,
+    tipo: 'Agua',
+    periodo: '2026-05',
+    lecturaAnterior: 120,
+    lecturaActual: 125,
+    consumo: 5,
+    monto: 15.00,
+    estado: 'Pendiente'
+  },
+  {
+    id: 2,
+    idContrato: 1,
+    tipo: 'Luz',
+    periodo: '2026-05',
+    lecturaAnterior: 450,
+    lecturaActual: 510,
+    consumo: 60,
+    monto: 42.00,
+    estado: 'Facturado'
+  }
+];
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [listaInmuebles, setListaInmuebles] = React.useState(inmueblesIniciales);
   const [listaInquilinos, setListaInquilinos] = React.useState(inquilinosIniciales);
   const [listaContratos, setListaContratos] = React.useState(contratosIniciales);
+  const [listaServicios, setListaServicios] = React.useState(serviciosIniciales);
 
   if (!isAuthenticated) {
     return <Login onLogin={() => setIsAuthenticated(true)} />;
@@ -124,7 +150,7 @@ function App() {
             <Route path="/inmuebles" element={<Inmuebles listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} />} />
             <Route path="/inquilinos" element={<Inquilinos listaInquilinos={listaInquilinos} setListaInquilinos={setListaInquilinos} />} />
             <Route path="/contratos" element={<Contratos listaContratos={listaContratos} setListaContratos={setListaContratos} listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} listaInquilinos={listaInquilinos} />} />
-            <Route path="/servicios" element={<Servicios />} />
+            <Route path="/servicios" element={<Servicios listaServicios={listaServicios} setListaServicios={setListaServicios} listaContratos={listaContratos} listaInmuebles={listaInmuebles} />} />
             <Route path="/facturacion" element={<Facturacion />} />
             <Route path="/reportes" element={<Reportes />} />
             <Route path="/configuracion" element={<Configuracion />} />
