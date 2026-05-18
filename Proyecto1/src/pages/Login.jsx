@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { login } from '../api/authApi';
 import './Login.css';
 
 const Login = ({ onLogin }) => {
@@ -6,13 +7,22 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (email === 'admin@gestion.com' && password === '123456789') {
+    try {
+      const data = await login(email, password); // El backend espera "admin"
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('rol', data.rol);
+      sessionStorage.setItem('nombreUsuario', data.nombreUsuario);
       setError('');
       onLogin();
-    } else {
-      setError('Correo o contraseña incorrectos.');
+    } catch (err) {
+      console.error(err);
+      if (err.message === 'Failed to fetch') {
+        setError('Error de conexión (Posible problema de CORS en el backend).');
+      } else {
+        setError(err.message || 'Error al iniciar sesión.');
+      }
     }
   };
 
@@ -33,13 +43,13 @@ const Login = ({ onLogin }) => {
           )}
           
           <div className="form-group">
-            <label className="form-label">Correo Electrónico</label>
+            <label className="form-label">Usuario</label>
             <div className="input-with-icon">
-              <i className="ph ph-envelope"></i>
+              <i className="ph ph-user"></i>
               <input 
-                type="email" 
+                type="text" 
                 className="form-control" 
-                placeholder="admin@gestion.com" 
+                placeholder="Ej. admin" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
