@@ -19,7 +19,7 @@ const Login = ({ onLogin }) => {
     } catch (err) {
       console.error(err);
       if (err.message === 'Failed to fetch') {
-        setError('Error de conexión (Posible problema de CORS en el backend).');
+        setError('Error al conectarse al servidor, por favor vuelva a intentarlo.');
       } else {
         setError(err.message || 'Error al iniciar sesión.');
       }
@@ -34,44 +34,44 @@ const Login = ({ onLogin }) => {
           <h1>GestiónPro</h1>
           <p>Bienvenido de vuelta, ingresa tus credenciales para acceder al panel de administración.</p>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="login-form">
           {error && (
             <div className="login-error">
               <i className="ph ph-warning-circle"></i> {error}
             </div>
           )}
-          
+
           <div className="form-group">
             <label className="form-label">Usuario</label>
             <div className="input-with-icon">
               <i className="ph ph-user"></i>
-              <input 
-                type="text" 
-                className="form-control" 
-                placeholder="Ej. admin" 
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Ej. admin"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
           </div>
-          
+
           <div className="form-group">
             <label className="form-label">Contraseña</label>
             <div className="input-with-icon">
               <i className="ph ph-lock-key"></i>
-              <input 
-                type="password" 
-                className="form-control" 
-                placeholder="•••••••••" 
+              <input
+                type="password"
+                className="form-control"
+                placeholder="•••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
           </div>
-          
+
           <button type="submit" className="btn-login">
             Ingresar al Sistema <i className="ph ph-arrow-right"></i>
           </button>
