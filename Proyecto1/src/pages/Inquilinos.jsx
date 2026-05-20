@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TablaInquilinos from '../components/TablaInquilinos';
 import ModalInquilino from '../components/ModalInquilino';
+import { createInquilino, updateInquilino } from '../api/inquilinosApi';
 import './PanelControl.css';
 
 const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
@@ -17,11 +18,24 @@ const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
     setInquilinoSeleccionado(null);
   };
 
-  const guardarInquilino = (datos) => {
+  const guardarInquilino = async (datos) => {
     if (datos.id) {
+      try {
+        await updateInquilino(datos.id, datos);
+      } catch (err) {
+        console.warn("Fallo al actualizar en AWS, guardando solo en local:", err);
+      }
       setListaInquilinos(prev => prev.map(inq => inq.id === datos.id ? { ...inq, ...datos } : inq));
     } else {
-      setListaInquilinos(prev => [{ ...datos, id: Date.now(), estado: 'Activo' }, ...prev]);
+      let nuevoId = Date.now();
+      try {
+        const response = await createInquilino(datos);
+        if (response && response.idInquilino) nuevoId = response.idInquilino;
+        else if (response && response.id) nuevoId = response.id;
+      } catch (err) {
+        console.warn("Fallo al crear en AWS, guardando solo en local:", err);
+      }
+      setListaInquilinos(prev => [{ ...datos, id: nuevoId, estado: 'Activo' }, ...prev]);
     }
   };
 

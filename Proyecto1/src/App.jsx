@@ -12,6 +12,7 @@ import Configuracion from './pages/Configuracion';
 import Reportes from './pages/Reportes';
 import Login from './pages/Login';
 import { getInmuebles } from './api/inmueblesApi';
+import { getInquilinos } from './api/inquilinosApi';
 import './App.css';
 
 const inmueblesIniciales = [
@@ -146,7 +147,17 @@ function App() {
           }
         })
         .catch(err => {
-          console.warn("No se pudo cargar desde AWS. Usando datos simulados locales:", err);
+          console.warn("No se pudo cargar Inmuebles desde AWS. Usando datos simulados locales:", err);
+        });
+        
+      getInquilinos()
+        .then(data => {
+          if (data && data.length > 0) {
+            setListaInquilinos(data);
+          }
+        })
+        .catch(err => {
+          console.warn("No se pudo cargar Inquilinos desde AWS. Usando datos simulados locales:", err);
         });
     }
   }, [isAuthenticated]);
