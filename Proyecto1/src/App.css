@@ -88,7 +88,7 @@
 /* Header Styles */
 .header {
   height: 72px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(15, 23, 42, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
