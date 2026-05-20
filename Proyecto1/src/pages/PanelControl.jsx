@@ -5,7 +5,7 @@ import './PanelControl.css';
 const PanelControl = ({ listaInmuebles = [] }) => {
   const total = listaInmuebles.length;
   const ocupados = listaInmuebles.filter(i => i.estado === 'Ocupado' || i.estado === 'Con Deuda').length;
-  const vacios = listaInmuebles.filter(i => i.estado === 'Desocupado').length;
+  const vacios = listaInmuebles.filter(i => i.estado === 'Desocupado' || i.estado === 'Disponible').length;
   const morosos = listaInmuebles.filter(i => i.estado === 'Con Deuda').length;
 
   return (
