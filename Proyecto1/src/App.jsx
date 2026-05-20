@@ -11,6 +11,7 @@ import Contratos from './pages/Contratos';
 import Configuracion from './pages/Configuracion';
 import Reportes from './pages/Reportes';
 import Login from './pages/Login';
+import { getInmuebles } from './api/inmueblesApi';
 import './App.css';
 
 const inmueblesIniciales = [
@@ -134,6 +135,21 @@ function App() {
   const [listaInquilinos, setListaInquilinos] = React.useState(inquilinosIniciales);
   const [listaContratos, setListaContratos] = React.useState(contratosIniciales);
   const [listaServicios, setListaServicios] = React.useState(serviciosIniciales);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      // Intentar cargar la lista real desde AWS
+      getInmuebles()
+        .then(data => {
+          if (data && data.length > 0) {
+            setListaInmuebles(data);
+          }
+        })
+        .catch(err => {
+          console.warn("No se pudo cargar desde AWS. Usando datos simulados locales:", err);
+        });
+    }
+  }, [isAuthenticated]);
 
   if (!isAuthenticated) {
     return <Login onLogin={() => setIsAuthenticated(true)} />;
