@@ -4,14 +4,16 @@ export async function getInmuebles() {
   const response = await apiFetch('/api/inmuebles');
   if (!response) return []; // en caso de 401 redirect
   if (!response.ok) throw new Error('Error al obtener inmuebles');
-  return response.json();
+  const data = await response.json();
+  return Array.isArray(data) ? data.map(mapFromDTO) : [];
 }
 
 export async function getInmuebleById(id) {
   const response = await apiFetch(`/api/inmuebles/${id}`);
   if (response.status === 404) return null;
   if (!response.ok) throw new Error('Error al obtener inmueble');
-  return response.json();
+  const data = await response.json();
+  return mapFromDTO(data);
 }
 
 // --- MAPPERS (Frontend -> Backend DTO) ---
@@ -44,6 +46,33 @@ const mapToDTO = (data) => ({
   precioAlquiler: parseAlquiler(data.alquiler),
   incluyeServicios: data.incluyeServicios || "N",
   observaciones: null
+});
+
+// --- MAPPERS (Backend DTO -> Frontend) ---
+const mapIdToTipo = (id) => {
+  const map = { 1: 'Local Comercial', 2: 'Oficina', 3: 'Tienda Externa', 4: 'Puesto', 5: 'Módulo' };
+  return map[id] || 'Local Comercial';
+};
+const mapIdToSector = (id) => {
+  const map = { 1: 'Mercado', 2: 'Galería', 3: 'Sección M', 4: 'Sección R', 5: 'Sección S', 6: 'Tiendas Externas', 7: 'Oficinas', 8: 'Módulos' };
+  return map[id] || 'Mercado';
+};
+const mapIdToEstado = (id) => {
+  const map = { 1: 'Disponible', 2: 'Ocupado', 3: 'Mantenimiento', 4: 'Reservado' };
+  return map[id] || 'Disponible';
+};
+
+const mapFromDTO = (dto) => ({
+  id: dto.idInmueble || dto.id || Date.now() + Math.random(),
+  codigo: dto.codigoInmueble || '',
+  descripcion: dto.descripcionInmueble || '',
+  tipo: mapIdToTipo(dto.idTipoInmueble),
+  sector: mapIdToSector(dto.idSector),
+  alquiler: dto.precioAlquiler ? `$${Number(dto.precioAlquiler).toLocaleString('en-US', {minimumFractionDigits: 2})}` : '$0.00',
+  estado: mapIdToEstado(dto.idEstadoInmueble),
+  area: '', 
+  piso: dto.pisoInmueble || '',
+  incluyeServicios: dto.incluyeServicios || 'N'
 });
 // ----------------------------------------
 
