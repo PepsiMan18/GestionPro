@@ -49,28 +49,15 @@ const mapToDTO = (data) => ({
 });
 
 // --- MAPPERS (Backend DTO -> Frontend) ---
-const mapIdToTipo = (id) => {
-  const map = { 1: 'Local Comercial', 2: 'Oficina', 3: 'Tienda Externa', 4: 'Puesto', 5: 'Módulo' };
-  return map[id] || 'Local Comercial';
-};
-const mapIdToSector = (id) => {
-  const map = { 1: 'Mercado', 2: 'Galería', 3: 'Sección M', 4: 'Sección R', 5: 'Sección S', 6: 'Tiendas Externas', 7: 'Oficinas', 8: 'Módulos' };
-  return map[id] || 'Mercado';
-};
-const mapIdToEstado = (id) => {
-  const map = { 1: 'Disponible', 2: 'Ocupado', 3: 'Mantenimiento', 4: 'Reservado' };
-  return map[id] || 'Disponible';
-};
-
 const mapFromDTO = (dto) => ({
   id: dto.idInmueble || dto.id || Date.now() + Math.random(),
   codigo: dto.codigoInmueble || '',
   descripcion: dto.descripcionInmueble || '',
-  tipo: mapIdToTipo(dto.idTipoInmueble),
-  sector: mapIdToSector(dto.idSector),
+  tipo: dto.tipoInmueble || 'Local Comercial',
+  sector: dto.sector || 'Mercado',
   alquiler: dto.precioAlquiler ? `$${Number(dto.precioAlquiler).toLocaleString('en-US', {minimumFractionDigits: 2})}` : '$0.00',
-  estado: mapIdToEstado(dto.idEstadoInmueble),
-  area: '', 
+  estado: dto.estadoInmueble || 'Disponible',
+  area: '', // Backend no devuelve area
   piso: dto.pisoInmueble || '',
   incluyeServicios: dto.incluyeServicios || 'N'
 });
