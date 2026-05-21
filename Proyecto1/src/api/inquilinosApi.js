@@ -81,3 +81,12 @@ export async function updateInquilino(id, data) {
   if (!response.ok) throw new Error('Error al actualizar inquilino');
   return response.json();
 }
+
+export async function deleteInquilino(id) {
+  const response = await apiFetch(`/api/inquilinos/${id}`, {
+    method: 'DELETE',
+  });
+  if (response.status === 404) throw new Error('Inquilino no encontrado');
+  if (!response.ok) throw new Error('Error al eliminar inquilino');
+  return true;
+}

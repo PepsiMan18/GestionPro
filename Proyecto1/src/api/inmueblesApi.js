@@ -2,7 +2,7 @@ import { apiFetch } from './config';
 
 export async function getInmuebles() {
   const response = await apiFetch('/api/inmuebles');
-  if (!response) return []; // en caso de 401 redirect
+  if (!response) return [];
   if (!response.ok) throw new Error('Error al obtener inmuebles');
   const data = await response.json();
   return Array.isArray(data) ? data.map(mapFromDTO) : [];
@@ -48,14 +48,14 @@ const mapToDTO = (data) => ({
   observaciones: null
 });
 
-// --- MAPPERS (Backend DTO -> Frontend) ---
+
 const mapFromDTO = (dto) => ({
   id: dto.idInmueble || dto.id || Date.now() + Math.random(),
   codigo: dto.codigoInmueble || '',
   descripcion: dto.descripcionInmueble || '',
   tipo: dto.tipoInmueble || 'Local Comercial',
   sector: dto.sector || 'Mercado',
-  alquiler: dto.precioAlquiler ? `$${Number(dto.precioAlquiler).toLocaleString('en-US', {minimumFractionDigits: 2})}` : '$0.00',
+  alquiler: dto.precioAlquiler ? `$${Number(dto.precioAlquiler).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00',
   estado: dto.estadoInmueble || 'Disponible',
   area: '', // Backend no devuelve area
   piso: dto.pisoInmueble || '',

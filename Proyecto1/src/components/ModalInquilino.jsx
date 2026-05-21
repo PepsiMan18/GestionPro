@@ -40,7 +40,13 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
 
   const manejarCambio = (e) => {
     const { name, value } = e.target;
-    setFormulario(prev => ({ ...prev, [name]: value }));
+    let newValue = value;
+    
+    if (name === 'numeroDocumento' && (formulario.tipoDocumento === 'DNI' || formulario.tipoDocumento === 'RUC')) {
+      newValue = value.replace(/\D/g, ''); // Solo números
+    }
+    
+    setFormulario(prev => ({ ...prev, [name]: newValue }));
   };
 
   const procesarGuardado = (e) => {
@@ -83,7 +89,15 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
 
               <div className="form-group">
                 <label className="form-label">Número de Documento</label>
-                <input type="text" name="numeroDocumento" className="form-control" value={formulario.numeroDocumento} onChange={manejarCambio} required />
+                <input 
+                  type="text" 
+                  name="numeroDocumento" 
+                  className="form-control" 
+                  value={formulario.numeroDocumento} 
+                  onChange={manejarCambio} 
+                  maxLength={formulario.tipoDocumento === 'DNI' ? 8 : formulario.tipoDocumento === 'RUC' ? 11 : 12}
+                  required 
+                />
               </div>
 
               <div className="form-group">

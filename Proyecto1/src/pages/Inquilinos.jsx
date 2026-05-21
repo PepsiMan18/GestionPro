@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TablaInquilinos from '../components/TablaInquilinos';
 import ModalInquilino from '../components/ModalInquilino';
-import { createInquilino, updateInquilino } from '../api/inquilinosApi';
+import { createInquilino, updateInquilino, deleteInquilino } from '../api/inquilinosApi';
 import './PanelControl.css';
 
 const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
@@ -39,6 +39,17 @@ const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
     }
   };
 
+  const eliminarInquilino = async (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este inquilino?')) {
+      try {
+        await deleteInquilino(id);
+      } catch (err) {
+        console.warn("Fallo al eliminar en AWS, eliminando en local:", err);
+      }
+      setListaInquilinos(prev => prev.filter(inq => inq.id !== id));
+    }
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -52,7 +63,11 @@ const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
         </button>
       </div>
 
-      <TablaInquilinos listaInquilinos={listaInquilinos} alEditarInquilino={abrirModal} />
+      <TablaInquilinos 
+        listaInquilinos={listaInquilinos} 
+        alEditarInquilino={abrirModal} 
+        alEliminarInquilino={eliminarInquilino} 
+      />
       
       <ModalInquilino 
         abierto={modalAbierto} 

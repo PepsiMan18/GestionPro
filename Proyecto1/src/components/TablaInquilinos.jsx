@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino }) => {
+const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino, alEliminarInquilino }) => {
   return (
     <div className="table-container">
       <div className="table-header">
@@ -49,14 +49,23 @@ const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino }) => {
                   </span>
                 </td>
                 <td>
-                  <button 
-                    className="btn-outline" 
-                    style={{ fontSize: '0.875rem' }}
-                    onClick={() => alEditarInquilino && alEditarInquilino(item)}
-                  >
-                    <i className="ph ph-pencil-simple"></i>
-                    Editar
-                  </button>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button 
+                      className="btn-outline" 
+                      style={{ fontSize: '0.875rem' }}
+                      onClick={() => alEditarInquilino && alEditarInquilino(item)}
+                    >
+                      <i className="ph ph-pencil-simple"></i>
+                      Editar
+                    </button>
+                    <button 
+                      className="btn-outline" 
+                      style={{ fontSize: '0.875rem', borderColor: 'var(--status-debt)', color: 'var(--status-debt)' }}
+                      onClick={() => alEliminarInquilino && alEliminarInquilino(item.id)}
+                    >
+                      <i className="ph ph-trash"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
