@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = () => {
+const Header = ({ onLogout }) => {
   return (
     <header className="header">
       <div className="header-search">
@@ -26,6 +26,19 @@ const Header = () => {
           </div>
           <i className="ph ph-caret-down" style={{ color: 'var(--text-muted)' }}></i>
         </div>
+        <button 
+          onClick={onLogout}
+          style={{
+            background: 'transparent', border: 'none', color: 'var(--danger)', 
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem',
+            padding: '0.5rem', borderRadius: 'var(--radius-sm)', transition: 'background 0.2s'
+          }}
+          title="Cerrar Sesión"
+          onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}
+          onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
+        >
+          <i className="ph ph-sign-out" style={{ fontSize: '1.25rem' }}></i>
+        </button>
       </div>
     </header>
   );

@@ -166,11 +166,16 @@ function App() {
     return <Login onLogin={() => setIsAuthenticated(true)} />;
   }
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    setIsAuthenticated(false);
+  };
+
   return (
     <div className="layout">
       <Sidebar />
       <div className="main-wrapper">
-        <Header />
+        <Header onLogout={handleLogout} />
         <main className="content">
           <Routes>
             <Route path="/" element={<PanelControl listaInmuebles={listaInmuebles} />} />
