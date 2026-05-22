@@ -43,10 +43,11 @@ const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este inquilino?')) {
       try {
         await deleteInquilino(id);
+        setListaInquilinos(prev => prev.filter(inq => inq.id !== id));
       } catch (err) {
-        console.warn("Fallo al eliminar en AWS, eliminando en local:", err);
+        console.warn("Fallo al eliminar en AWS:", err);
+        alert('No se pudo eliminar el inquilino. Es posible que tenga contratos asociados en la base de datos.');
       }
-      setListaInquilinos(prev => prev.filter(inq => inq.id !== id));
     }
   };
 
