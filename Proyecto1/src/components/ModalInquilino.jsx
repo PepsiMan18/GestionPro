@@ -55,7 +55,7 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
     if (!formulario.numeroDocumento || formulario.numeroDocumento.length < 8) return;
     setBuscandoDoc(true);
     try {
-      const data = await consultarDocumento(formulario.numeroDocumento);
+      const data = await consultarDocumento(formulario.numeroDocumento, formulario.tipoDocumento);
       // Asumiendo que la API devuelve { nombre: "Juan", apellido: "Perez" } o { razonSocial: "Empresa" }
       // Ajustaremos esto si el formato es diferente, pero por ahora lo inyectaremos en "nombre"
       let nombreCompleto = data.nombre ? `${data.nombre} ${data.apellido || ''}`.trim() : (data.razonSocial || data.nombres || '');

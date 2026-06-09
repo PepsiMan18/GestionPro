@@ -91,8 +91,9 @@ export async function deleteInquilino(id) {
   return true;
 }
 
-export async function consultarDocumento(numero) {
-  const response = await apiFetch(`/api/inquilinos/consultar-documento?numeroDocumento=${numero}`);
+export async function consultarDocumento(numero, tipo = 'DNI') {
+  const idTipo = mapTipoDocToId(tipo);
+  const response = await apiFetch(`/api/inquilinos/consultar-documento?numero=${numero}&tipo=${idTipo}`);
   if (!response) return null;
   if (!response.ok) throw new Error('No se pudo encontrar el documento');
   return response.json();
