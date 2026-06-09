@@ -92,8 +92,8 @@ export async function deleteInquilino(id) {
 }
 
 export async function consultarDocumento(numero) {
-  // Assuming the API expects a query parameter like ?numeroDocumento=...
-  const response = await fetch(`http://si-8d2b91972c694c15850c6454045d57cd.ecs.us-east-2.on.aws/api/inquilinos/consultar-documento?numeroDocumento=${numero}`);
+  const response = await apiFetch(`/api/inquilinos/consultar-documento?numeroDocumento=${numero}`);
+  if (!response) return null;
   if (!response.ok) throw new Error('No se pudo encontrar el documento');
   return response.json();
 }

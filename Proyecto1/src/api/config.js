@@ -9,9 +9,14 @@ export function authHeaders() {
 }
 
 export async function apiFetch(path, options = {}) {
+  const mergedHeaders = { ...authHeaders(), ...options?.headers };
+  if (mergedHeaders['Content-Type'] === null) {
+    delete mergedHeaders['Content-Type'];
+  }
+
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...options,
-    headers: { ...authHeaders(), ...options?.headers },
+    headers: mergedHeaders,
   });
 
   if (response.status === 401) {
