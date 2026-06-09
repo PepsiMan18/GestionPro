@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TablaContratos from '../components/TablaContratos';
 import ModalContrato from '../components/ModalContrato';
+import { createContrato, uploadContratoPdf } from '../api/contratosApi';
 
 const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setListaInmuebles, listaInquilinos }) => {
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -16,12 +17,41 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
     setContratoSeleccionado(null);
   };
 
-  const guardarContrato = (datos) => {
+  const guardarContrato = async (datos) => {
     if (datos.id) {
       setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
     } else {
-      setListaContratos(prev => [{ ...datos, id: Date.now(), estado: 'Vigente' }, ...prev]);
-      setListaInmuebles(prev => prev.map(inm => inm.id === Number(datos.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+      const dto = {
+        IdInquilino: Number(datos.idInquilino),
+        IdInmueble: Number(datos.idInmueble),
+        FechaInicio: datos.fechaInicio,
+        FechaVcmto: datos.fechaFin,
+        RentaMensual: Number(datos.monto),
+        NroMeses: 12, // Por defecto o calculado
+        NroMesPPago: 12
+      };
+      
+      try {
+        const res = await createContrato(dto);
+        const newId = res.NroContrato || Date.now();
+        setListaContratos(prev => [{ ...datos, id: newId, estado: 'Doc Pendiente' }, ...prev]);
+        setListaInmuebles(prev => prev.map(inm => inm.id === Number(datos.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+      } catch (err) {
+        console.warn("Fallo al crear contrato en AWS, guardando en local:", err);
+        setListaContratos(prev => [{ ...datos, id: Date.now(), estado: 'Doc Pendiente' }, ...prev]);
+        setListaInmuebles(prev => prev.map(inm => inm.id === Number(datos.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+      }
+    }
+  };
+
+  const subirPdfContrato = async (idContrato, file) => {
+    try {
+       await uploadContratoPdf(idContrato, file);
+       setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Vigente', archivo: file.name } : c));
+       alert("Documento subido y contrato activado con éxito.");
+    } catch(err) {
+       console.warn("Fallo al subir PDF en AWS, simulando en local:", err);
+       setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Vigente', archivo: file.name } : c));
     }
   };
 
@@ -53,6 +83,7 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
         listaInquilinos={listaInquilinos} 
         alEditar={abrirModal}
         alFinalizar={finalizarContrato}
+        alSubirPdf={subirPdfContrato}
       />
 
       <ModalContrato

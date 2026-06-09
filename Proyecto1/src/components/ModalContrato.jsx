@@ -93,10 +93,6 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
                 <input type="number" name="monto" className="form-control" value={formulario.monto} onChange={manejarCambio} required disabled={esEdicion} />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Contrato Escaneado PDF (HU-08)</label>
-                <input type="file" accept=".pdf" className="form-control" style={{padding: '0.4rem'}} />
-              </div>
 
             </div>
           </div>

@@ -90,3 +90,10 @@ export async function deleteInquilino(id) {
   if (!response.ok) throw new Error('Error al eliminar inquilino');
   return true;
 }
+
+export async function consultarDocumento(numero) {
+  // Assuming the API expects a query parameter like ?numeroDocumento=...
+  const response = await fetch(`http://si-8d2b91972c694c15850c6454045d57cd.ecs.us-east-2.on.aws/api/inquilinos/consultar-documento?numeroDocumento=${numero}`);
+  if (!response.ok) throw new Error('No se pudo encontrar el documento');
+  return response.json();
+}

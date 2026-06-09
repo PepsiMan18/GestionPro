@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { consultarDocumento } from '../api/inquilinosApi';
 import './ModalInmueble.css';
 
 const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
   const esEdicion = !!datosInquilino;
+  const [buscandoDoc, setBuscandoDoc] = useState(false);
 
   const [formulario, setFormulario] = useState({
     id: null,
@@ -49,6 +51,26 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
     setFormulario(prev => ({ ...prev, [name]: newValue }));
   };
 
+  const buscarDocumento = async () => {
+    if (!formulario.numeroDocumento || formulario.numeroDocumento.length < 8) return;
+    setBuscandoDoc(true);
+    try {
+      const data = await consultarDocumento(formulario.numeroDocumento);
+      // Asumiendo que la API devuelve { nombre: "Juan", apellido: "Perez" } o { razonSocial: "Empresa" }
+      // Ajustaremos esto si el formato es diferente, pero por ahora lo inyectaremos en "nombre"
+      let nombreCompleto = data.nombre ? `${data.nombre} ${data.apellido || ''}`.trim() : (data.razonSocial || data.nombres || '');
+      if(nombreCompleto) {
+         setFormulario(prev => ({ ...prev, nombre: nombreCompleto }));
+      } else {
+         alert('Documento encontrado, pero sin nombre/razón social en el formato esperado.');
+      }
+    } catch (error) {
+      alert('No se encontró el documento o hubo un error en la consulta.');
+    } finally {
+      setBuscandoDoc(false);
+    }
+  };
+
   const procesarGuardado = (e) => {
     e.preventDefault();
     alGuardar && alGuardar(formulario);
@@ -89,15 +111,27 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
 
               <div className="form-group">
                 <label className="form-label">Número de Documento</label>
-                <input 
-                  type="text" 
-                  name="numeroDocumento" 
-                  className="form-control" 
-                  value={formulario.numeroDocumento} 
-                  onChange={manejarCambio} 
-                  maxLength={formulario.tipoDocumento === 'DNI' ? 8 : formulario.tipoDocumento === 'RUC' ? 11 : 12}
-                  required 
-                />
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input 
+                    type="text" 
+                    name="numeroDocumento" 
+                    className="form-control" 
+                    style={{ flex: 1 }}
+                    value={formulario.numeroDocumento} 
+                    onChange={manejarCambio} 
+                    maxLength={formulario.tipoDocumento === 'DNI' ? 8 : formulario.tipoDocumento === 'RUC' ? 11 : 12}
+                    required 
+                  />
+                  <button 
+                    type="button" 
+                    className="btn-primary" 
+                    onClick={buscarDocumento}
+                    disabled={buscandoDoc || formulario.numeroDocumento.length < 8}
+                    style={{ padding: '0.5rem 1rem' }}
+                  >
+                    {buscandoDoc ? <i className="ph ph-spinner ph-spin"></i> : <i className="ph ph-magnifying-glass"></i>}
+                  </button>
+                </div>
               </div>
 
               <div className="form-group">

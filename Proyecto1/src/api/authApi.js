@@ -11,5 +11,5 @@ export async function login(usuario, contrasena) {
     throw new Error('Credenciales incorrectas');
   }
 
-  return response.json(); // { token, nombreUsuario, rol, expira }
+  return response.json(); 
 }

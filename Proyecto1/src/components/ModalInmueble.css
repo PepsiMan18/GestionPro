@@ -17,11 +17,12 @@
 .modal-content {
   background-color: var(--bg-surface);
   border-radius: var(--radius-lg);
+  border: 1px solid rgba(99, 102, 241, 0.3); /* Primary color subtle border */
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.15), 0 10px 15px -3px rgba(0, 0, 0, 0.5); /* Glow effect */
   animation: slideUp 0.3s ease-out;
 }
 

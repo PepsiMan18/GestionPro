@@ -1,8 +1,9 @@
 import React from 'react';
 
-const TablaContratos = ({ listaContratos, listaInmuebles, listaInquilinos, alEditar, alFinalizar }) => {
+const TablaContratos = ({ listaContratos, listaInmuebles, listaInquilinos, alEditar, alFinalizar, alSubirPdf }) => {
 
   const calcularEstado = (fechaFin, estadoActual) => {
+    if(estadoActual === 'Doc Pendiente') return { texto: 'Doc Pendiente', clase: 'badge-debt' };
     if(estadoActual === 'Finalizado') return { texto: 'Finalizado', clase: '' };
     const hoy = new Date();
     const fin = new Date(fechaFin);
@@ -49,9 +50,16 @@ const TablaContratos = ({ listaContratos, listaInmuebles, listaInquilinos, alEdi
                   <td className="price-text">${contrato.monto}</td>
                   <td><span className={`badge ${estado.clase}`}>{estado.texto}</span></td>
                   <td>
-                    <button className="btn-outline" style={{padding: '0.25rem 0.5rem'}} title="Ver Documento">
-                      <i className="ph ph-file-pdf" style={{color: 'var(--primary)', fontSize: '1.2rem'}}></i>
-                    </button>
+                    {contrato.estado === 'Doc Pendiente' ? (
+                      <label className="btn-primary" style={{padding: '0.25rem 0.5rem', cursor: 'pointer', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem'}}>
+                        <i className="ph ph-upload-simple"></i> Subir PDF
+                        <input type="file" style={{display: 'none'}} accept=".pdf" onChange={(e) => e.target.files[0] && alSubirPdf(contrato.id, e.target.files[0])} />
+                      </label>
+                    ) : (
+                      <button className="btn-outline" style={{padding: '0.25rem 0.5rem'}} title="Ver Documento">
+                        <i className="ph ph-file-pdf" style={{color: 'var(--primary)', fontSize: '1.2rem'}}></i>
+                      </button>
+                    )}
                   </td>
                   <td>
                     {estado.texto !== 'Finalizado' && (

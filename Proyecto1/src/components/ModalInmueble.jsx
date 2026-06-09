@@ -173,20 +173,7 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Estado</label>
-                <select 
-                  name="estado" 
-                  className="form-control"
-                  value={formulario.estado}
-                  onChange={manejarCambio}
-                >
-                  <option value="Disponible">Disponible</option>
-                  <option value="Ocupado">Ocupado</option>
-                  <option value="Mantenimiento">Mantenimiento</option>
-                  <option value="Reservado">Reservado</option>
-                </select>
-              </div>
+
 
               <div className="form-group full-width">
                 <label className="form-label">¿Incluye Servicios Básicos?</label>

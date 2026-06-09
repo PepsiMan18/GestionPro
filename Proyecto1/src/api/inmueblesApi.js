@@ -16,7 +16,7 @@ export async function getInmuebleById(id) {
   return mapFromDTO(data);
 }
 
-// --- MAPPERS (Frontend -> Backend DTO) ---
+
 const mapTipoToId = (tipo) => {
   const map = { 'Local Comercial': 1, 'Oficina': 2, 'Tienda Externa': 3, 'Puesto': 4, 'Módulo': 5 };
   return map[tipo] || 1;
