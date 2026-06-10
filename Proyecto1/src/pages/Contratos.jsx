@@ -29,8 +29,8 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
         });
         setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
       } catch (err) {
-        console.warn("Fallo al renovar contrato en AWS, guardando en local:", err);
-        setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
+        console.error("Error al renovar contrato:", err);
+        alert(err.message || "Fallo al renovar el contrato en la base de datos.");
       }
     } else {
       const dto = {
@@ -49,9 +49,8 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
         setListaContratos(prev => [{ ...datos, id: newId, estado: 'Doc Pendiente' }, ...prev]);
         setListaInmuebles(prev => prev.map(inm => inm.id === Number(datos.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
       } catch (err) {
-        console.warn("Fallo al crear contrato en AWS, guardando en local:", err);
-        setListaContratos(prev => [{ ...datos, id: Date.now(), estado: 'Doc Pendiente' }, ...prev]);
-        setListaInmuebles(prev => prev.map(inm => inm.id === Number(datos.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+        console.error("Error al crear contrato:", err);
+        alert(err.message || "Fallo al crear el contrato en la base de datos.");
       }
     }
   };
@@ -74,9 +73,8 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
         setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Finalizado' } : c));
         setListaInmuebles(prev => prev.map(inm => inm.id === Number(idInmueble) ? { ...inm, estado: 'Disponible' } : inm));
       } catch (err) {
-        console.warn("Fallo al finalizar en AWS, simulando en local:", err);
-        setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Finalizado' } : c));
-        setListaInmuebles(prev => prev.map(inm => inm.id === Number(idInmueble) ? { ...inm, estado: 'Disponible' } : inm));
+        console.error("Error al finalizar contrato:", err);
+        alert(err.message || "Fallo al finalizar el contrato en la base de datos.");
       }
     }
   };
