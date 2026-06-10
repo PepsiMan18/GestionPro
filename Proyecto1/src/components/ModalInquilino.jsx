@@ -56,13 +56,14 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
     setBuscandoDoc(true);
     try {
       const data = await consultarDocumento(formulario.numeroDocumento, formulario.tipoDocumento);
-      // Asumiendo que la API devuelve { nombre: "Juan", apellido: "Perez" } o { razonSocial: "Empresa" }
-      // Ajustaremos esto si el formato es diferente, pero por ahora lo inyectaremos en "nombre"
-      let nombreCompleto = data.nombre ? `${data.nombre} ${data.apellido || ''}`.trim() : (data.razonSocial || data.nombres || '');
-      if(nombreCompleto) {
-         setFormulario(prev => ({ ...prev, nombre: nombreCompleto }));
+      
+      if (data && data.valido) {
+        setFormulario(prev => ({
+          ...prev,
+          nombre: data.nombreCompleto || ''
+        }));
       } else {
-         alert('Documento encontrado, pero sin nombre/razón social en el formato esperado.');
+        alert(data.mensaje || 'Documento inválido o no encontrado.');
       }
     } catch (error) {
       alert('No se encontró el documento o hubo un error en la consulta.');
