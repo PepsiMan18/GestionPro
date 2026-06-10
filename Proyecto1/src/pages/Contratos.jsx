@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TablaContratos from '../components/TablaContratos';
 import ModalContrato from '../components/ModalContrato';
-import { createContrato, uploadContratoPdf } from '../api/contratosApi';
+import { createContrato, uploadContratoPdf, finalizarContratoApi, renovarContratoApi } from '../api/contratosApi';
 
 const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setListaInmuebles, listaInquilinos }) => {
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -19,7 +19,19 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
 
   const guardarContrato = async (datos) => {
     if (datos.id) {
-      setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
+      try {
+        await renovarContratoApi(datos.id, {
+          IdInquilino: Number(datos.idInquilino),
+          IdInmueble: Number(datos.idInmueble),
+          FechaInicio: datos.fechaInicio,
+          FechaVcmto: datos.fechaFin,
+          RentaMensual: Number(datos.monto)
+        });
+        setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
+      } catch (err) {
+        console.warn("Fallo al renovar contrato en AWS, guardando en local:", err);
+        setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
+      }
     } else {
       const dto = {
         IdInquilino: Number(datos.idInquilino),
@@ -55,10 +67,17 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
     }
   };
 
-  const finalizarContrato = (idContrato, idInmueble) => {
+  const finalizarContrato = async (idContrato, idInmueble) => {
     if(window.confirm('¿Estás seguro de finalizar este contrato? El inmueble quedará disponible automáticamente (HU-07).')){
-      setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Finalizado' } : c));
-      setListaInmuebles(prev => prev.map(inm => inm.id === Number(idInmueble) ? { ...inm, estado: 'Disponible' } : inm));
+      try {
+        await finalizarContratoApi(idContrato);
+        setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Finalizado' } : c));
+        setListaInmuebles(prev => prev.map(inm => inm.id === Number(idInmueble) ? { ...inm, estado: 'Disponible' } : inm));
+      } catch (err) {
+        console.warn("Fallo al finalizar en AWS, simulando en local:", err);
+        setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Finalizado' } : c));
+        setListaInmuebles(prev => prev.map(inm => inm.id === Number(idInmueble) ? { ...inm, estado: 'Disponible' } : inm));
+      }
     }
   };
 
