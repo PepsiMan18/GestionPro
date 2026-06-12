@@ -36,12 +36,16 @@ const TablaContratos = ({ listaContratos, listaInmuebles, listaInquilinos, alEdi
               const inquilino = listaInquilinos.find(i => i.id === Number(contrato.idInquilino));
               const estado = calcularEstado(contrato.fechaFin, contrato.estado);
               
+              const codigoAMostrar = contrato.codigoInmueble || (inmueble ? inmueble.codigo : 'Inmueble N/A');
+              const nombreAMostrar = contrato.nombreInquilino || (inquilino ? inquilino.nombre : 'Inquilino N/A');
+              const docAMostrar = inquilino ? inquilino.numeroDocumento : '';
+
               return (
                 <tr key={contrato.id}>
-                  <td style={{fontWeight: 600}}>{inmueble ? inmueble.codigo : 'Inmueble N/A'}</td>
+                  <td style={{fontWeight: 600}}>{codigoAMostrar}</td>
                   <td>
-                    <div>{inquilino ? inquilino.nombre : 'Inquilino N/A'}</div>
-                    <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{inquilino ? inquilino.numeroDocumento : ''}</div>
+                    <div>{nombreAMostrar}</div>
+                    <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{docAMostrar}</div>
                   </td>
                   <td>
                     <div style={{fontSize: '0.875rem'}}>{contrato.fechaInicio} al</div>

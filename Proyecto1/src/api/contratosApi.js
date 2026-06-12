@@ -1,11 +1,23 @@
 import { apiFetch } from './config';
 
+const mapFromDTO = (dto) => ({
+  id: dto.idContrato || dto.id || Date.now(),
+  idInmueble: dto.idInmueble,
+  idInquilino: dto.idInquilino,
+  codigoInmueble: dto.codigoInmueble,
+  nombreInquilino: dto.nombreInquilino,
+  fechaInicio: dto.fechaInicio,
+  fechaFin: dto.fechaVcmto || dto.fechaFin,
+  monto: dto.rentaMensual || dto.monto,
+  estado: dto.estado || (dto.etiqueta === 'VENCIDO' ? 'Por Vencer' : (dto.estadoContrato === 'Finalizado' ? 'Finalizado' : 'Vigente'))
+});
+
 export async function getContratos() {
   const response = await apiFetch('/api/contratos');
   if (!response) return [];
   if (!response.ok) throw new Error('Error al obtener contratos');
   const data = await response.json();
-  return Array.isArray(data) ? data : [];
+  return Array.isArray(data) ? data.map(mapFromDTO) : [];
 }
 
 export async function createContrato(data) {
