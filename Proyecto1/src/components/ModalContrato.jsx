@@ -34,7 +34,22 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
 
   const manejarCambio = (e) => {
     const { name, value } = e.target;
-    setFormulario(prev => ({ ...prev, [name]: value }));
+    setFormulario(prev => {
+      const nextForm = { ...prev, [name]: value };
+      if (name === 'idInmueble' && value) {
+        const inmuebleElegido = listaInmuebles.find(i => Number(i.id) === Number(value));
+        if (inmuebleElegido) {
+          // Extraer número de formato "$1,000.00" o si ya es numérico
+          const precio = typeof inmuebleElegido.alquiler === 'string' 
+            ? inmuebleElegido.alquiler.replace(/[^0-9.]/g, '') 
+            : inmuebleElegido.alquiler;
+          nextForm.monto = precio || '';
+        }
+      } else if (name === 'idInmueble' && !value) {
+        nextForm.monto = '';
+      }
+      return nextForm;
+    });
   };
 
   const procesarGuardado = (e) => {
@@ -90,7 +105,7 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
 
               <div className="form-group">
                 <label className="form-label">Monto de Alquiler Base Acordado ($)</label>
-                <input type="number" name="monto" className="form-control" value={formulario.monto} onChange={manejarCambio} required disabled={esEdicion} />
+                <input type="number" name="monto" className="form-control" value={formulario.monto} readOnly style={{backgroundColor: 'var(--bg-card-alt)'}} title="El monto es fijado por el Inmueble" />
               </div>
 
 

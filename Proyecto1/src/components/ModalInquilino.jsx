@@ -149,7 +149,7 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
                 <input type="text" name="nombre" className="form-control" value={formulario.nombre} onChange={manejarCambio} required />
               </div>
 
-              {formulario.tipoCliente === 'Jurídica' && (
+              {formulario.tipoDocumento === 'RUC' && (
                 <div className="form-group">
                   <label className="form-label">Representante Legal (DNI/Nombre)</label>
                   <input type="text" name="representante" className="form-control" value={formulario.representante || ''} onChange={manejarCambio} required />
