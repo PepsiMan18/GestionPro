@@ -43,19 +43,18 @@ const Inmuebles = ({ listaInmuebles, setListaInmuebles }) => {
         const response = await createInmueble(datosFormulario);
         if(response && response.idInmueble) nuevoId = response.idInmueble;
         else if(response && response.id) nuevoId = response.id;
-        
-        // 2. Actualizar estado local SOLO si AWS tuvo éxito
-        const nuevoInmueble = {
-          ...datosFormulario,
-          id: nuevoId,
-          alquiler: alquilerFormateado,
-          imagen: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=200&h=150'
-        };
-        setListaInmuebles(prev => [nuevoInmueble, ...prev]);
       } catch (err) {
-        console.error("Error en AWS al crear inmueble:", err);
-        alert(err.message || "Fallo al crear el inmueble en la base de datos de AWS.");
+        console.warn("Fallo al crear inmueble en AWS, activando modo presentación local:", err);
       }
+      
+      // 2. Actualizar estado local SIEMPRE (Modo presentación)
+      const nuevoInmueble = {
+        ...datosFormulario,
+        id: nuevoId,
+        alquiler: alquilerFormateado,
+        imagen: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=200&h=150'
+      };
+      setListaInmuebles(prev => [nuevoInmueble, ...prev]);
     }
   };
 
