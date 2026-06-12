@@ -21,11 +21,11 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
     if (datos.id) {
       try {
         await renovarContratoApi(datos.id, {
-          IdInquilino: Number(datos.idInquilino),
-          IdInmueble: Number(datos.idInmueble),
-          FechaInicio: datos.fechaInicio,
-          FechaVcmto: datos.fechaFin,
-          RentaMensual: Number(datos.monto)
+          idInquilino: Number(datos.idInquilino),
+          idInmueble: Number(datos.idInmueble),
+          fechaInicio: datos.fechaInicio,
+          fechaVcmto: datos.fechaFin,
+          rentaMensual: Number(datos.monto)
         });
         setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
       } catch (err) {
@@ -34,13 +34,13 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
       }
     } else {
       const dto = {
-        IdInquilino: Number(datos.idInquilino),
-        IdInmueble: Number(datos.idInmueble),
-        FechaInicio: datos.fechaInicio,
-        FechaVcmto: datos.fechaFin,
-        RentaMensual: Number(datos.monto),
-        NroMeses: 12, // Por defecto o calculado
-        NroMesPPago: 12
+        idInquilino: Number(datos.idInquilino),
+        idInmueble: Number(datos.idInmueble),
+        fechaInicio: datos.fechaInicio,
+        fechaVcmto: datos.fechaFin,
+        rentaMensual: Number(datos.monto),
+        nroMeses: 12,
+        nroMesPPago: 12
       };
       
       try {
