@@ -32,7 +32,7 @@ const Inmuebles = ({ listaInmuebles, setListaInmuebles }) => {
       // 2. Actualizar estado local (Éxito o Fallback)
       setListaInmuebles(prev => prev.map(inm => inm.id === datosFormulario.id ? { 
         ...inm, 
-        ...datosFormulario, 
+        ...datosFormulario,
         alquiler: alquilerFormateado
       } : inm));
       
@@ -41,19 +41,21 @@ const Inmuebles = ({ listaInmuebles, setListaInmuebles }) => {
       try {
         // 1. Intentar crear en AWS
         const response = await createInmueble(datosFormulario);
-        if(response && response.id) nuevoId = response.id;
+        if(response && response.idInmueble) nuevoId = response.idInmueble;
+        else if(response && response.id) nuevoId = response.id;
+        
+        // 2. Actualizar estado local SOLO si AWS tuvo éxito
+        const nuevoInmueble = {
+          ...datosFormulario,
+          id: nuevoId,
+          alquiler: alquilerFormateado,
+          imagen: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=200&h=150'
+        };
+        setListaInmuebles(prev => [nuevoInmueble, ...prev]);
       } catch (err) {
-        console.warn("Fallo al crear en AWS, guardando solo en local:", err);
+        console.error("Error en AWS al crear inmueble:", err);
+        alert(err.message || "Fallo al crear el inmueble en la base de datos de AWS.");
       }
-
-      // 2. Actualizar estado local (Éxito o Fallback)
-      const nuevoInmueble = {
-        ...datosFormulario,
-        id: nuevoId,
-        alquiler: alquilerFormateado,
-        imagen: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=200&h=150'
-      };
-      setListaInmuebles(prev => [nuevoInmueble, ...prev]);
     }
   };
 
