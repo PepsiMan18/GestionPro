@@ -4,7 +4,7 @@ import ModalInquilino from '../components/ModalInquilino';
 import { createInquilino, updateInquilino, deleteInquilino } from '../api/inquilinosApi';
 import './PanelControl.css';
 
-const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
+const Inquilinos = ({ listaInquilinos, setListaInquilinos, listaContratos = [] }) => {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [inquilinoSeleccionado, setInquilinoSeleccionado] = useState(null);
 
@@ -65,7 +65,8 @@ const Inquilinos = ({ listaInquilinos, setListaInquilinos }) => {
       </div>
 
       <TablaInquilinos 
-        listaInquilinos={listaInquilinos} 
+        listaInquilinos={listaInquilinos}
+        listaContratos={listaContratos}
         alEditarInquilino={abrirModal} 
         alEliminarInquilino={eliminarInquilino} 
       />

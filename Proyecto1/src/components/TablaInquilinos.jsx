@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino, alEliminarInquilino }) => {
+const TablaInquilinos = ({ listaInquilinos = [], listaContratos = [], alEditarInquilino, alEliminarInquilino }) => {
   return (
     <div className="table-container">
       <div className="table-header">
@@ -18,7 +18,15 @@ const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino, alEliminarIn
             </tr>
           </thead>
           <tbody>
-            {listaInquilinos.map((item) => (
+            {listaInquilinos.map((item) => {
+              const tieneContrato = listaContratos.some(c => 
+                Number(c.idInquilino) === Number(item.id) && 
+                (c.estado === 'Vigente' || c.estado === 'Doc Pendiente' || c.estadoContrato === 'Renovado' || c.estadoContrato === 'Vigente')
+              );
+              const estadoBadge = tieneContrato ? 'Con Contrato' : 'Sin Contrato';
+              const badgeClass = tieneContrato ? 'badge-occupied' : 'badge-vacant';
+
+              return (
               <tr key={item.id}>
                 <td style={{fontWeight: '600'}}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -44,8 +52,8 @@ const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino, alEliminarIn
                   <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>{item.correo}</div>
                 </td>
                 <td>
-                  <span className={`badge ${item.estado === 'Activo' ? 'badge-occupied' : 'badge-vacant'}`}>
-                    {item.estado}
+                  <span className={`badge ${badgeClass}`}>
+                    {estadoBadge}
                   </span>
                 </td>
                 <td>
@@ -68,7 +76,8 @@ const TablaInquilinos = ({ listaInquilinos = [], alEditarInquilino, alEliminarIn
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

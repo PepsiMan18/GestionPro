@@ -13,6 +13,7 @@ import Reportes from './pages/Reportes';
 import Login from './pages/Login';
 import { getInmuebles } from './api/inmueblesApi';
 import { getInquilinos } from './api/inquilinosApi';
+import { getContratos } from './api/contratosApi';
 import './App.css';
 
 const inmueblesIniciales = [
@@ -159,6 +160,16 @@ function App() {
         .catch(err => {
           console.warn("No se pudo cargar Inquilinos desde AWS. Usando datos simulados locales:", err);
         });
+
+      getContratos()
+        .then(data => {
+          if (data && data.length > 0) {
+            setListaContratos(data);
+          }
+        })
+        .catch(err => {
+          console.warn("No se pudo cargar Contratos desde AWS. Usando datos simulados locales:", err);
+        });
     }
   }, [isAuthenticated]);
 
@@ -180,7 +191,7 @@ function App() {
           <Routes>
             <Route path="/" element={<PanelControl listaInmuebles={listaInmuebles} />} />
             <Route path="/inmuebles" element={<Inmuebles listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} />} />
-            <Route path="/inquilinos" element={<Inquilinos listaInquilinos={listaInquilinos} setListaInquilinos={setListaInquilinos} />} />
+            <Route path="/inquilinos" element={<Inquilinos listaInquilinos={listaInquilinos} setListaInquilinos={setListaInquilinos} listaContratos={listaContratos} />} />
             <Route path="/contratos" element={<Contratos listaContratos={listaContratos} setListaContratos={setListaContratos} listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} listaInquilinos={listaInquilinos} />} />
             <Route path="/servicios" element={<Servicios listaServicios={listaServicios} setListaServicios={setListaServicios} listaContratos={listaContratos} listaInmuebles={listaInmuebles} />} />
             <Route path="/facturacion" element={<Facturacion />} />
