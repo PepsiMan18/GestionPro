@@ -32,10 +32,14 @@ const Inquilinos = ({ listaInquilinos, setListaInquilinos, listaContratos = [] }
         const response = await createInquilino(datos);
         if (response && response.idInquilino) nuevoId = response.idInquilino;
         else if (response && response.id) nuevoId = response.id;
+        
+        // Solo agregar a la tabla si AWS responde bien
+        setListaInquilinos(prev => [{ ...datos, id: nuevoId, estado: 'Activo' }, ...prev]);
       } catch (err) {
-        console.warn("Fallo al crear en AWS, guardando solo en local:", err);
+        console.error("Error en AWS:", err);
+        alert(err.message || "Fallo al crear en la base de datos de AWS.");
+        // No agregamos a local state para evitar fantasmas
       }
-      setListaInquilinos(prev => [{ ...datos, id: nuevoId, estado: 'Activo' }, ...prev]);
     }
   };
 
