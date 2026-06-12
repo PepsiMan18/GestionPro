@@ -16,7 +16,8 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
     correo: '',
     direccion: '',
     sustentoIngresos: '',
-    referencias: ''
+    referencias: '',
+    representante: ''
   });
 
   useEffect(() => {
@@ -32,8 +33,10 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
         celular: '',
         correo: '',
         direccion: '',
+        direccion: '',
         sustentoIngresos: '',
-        referencias: ''
+        referencias: '',
+        representante: ''
       });
     }
   }, [datosInquilino, abierto]);
@@ -48,7 +51,13 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
       newValue = value.replace(/\D/g, ''); // Solo números
     }
     
-    setFormulario(prev => ({ ...prev, [name]: newValue }));
+    setFormulario(prev => {
+      const nextForm = { ...prev, [name]: newValue };
+      if (name === 'tipoCliente' && newValue === 'Jurídica') {
+        nextForm.tipoDocumento = 'RUC';
+      }
+      return nextForm;
+    });
   };
 
   const buscarDocumento = async () => {
@@ -103,10 +112,10 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
 
               <div className="form-group">
                 <label className="form-label">Tipo de Documento</label>
-                <select name="tipoDocumento" className="form-control" value={formulario.tipoDocumento} onChange={manejarCambio}>
-                  <option value="DNI">DNI</option>
+                <select name="tipoDocumento" className="form-control" value={formulario.tipoDocumento} onChange={manejarCambio} disabled={formulario.tipoCliente === 'Jurídica'}>
+                  {formulario.tipoCliente === 'Natural' && <option value="DNI">DNI</option>}
                   <option value="RUC">RUC</option>
-                  <option value="CE">Carnet de Extranjería</option>
+                  {formulario.tipoCliente === 'Natural' && <option value="CE">Carnet de Extranjería</option>}
                 </select>
               </div>
 
@@ -139,6 +148,13 @@ const ModalInquilino = ({ abierto, alCerrar, datosInquilino, alGuardar }) => {
                 <label className="form-label">{formulario.tipoCliente === 'Jurídica' ? 'Razón Social' : 'Nombres y Apellidos'}</label>
                 <input type="text" name="nombre" className="form-control" value={formulario.nombre} onChange={manejarCambio} required />
               </div>
+
+              {formulario.tipoCliente === 'Jurídica' && (
+                <div className="form-group">
+                  <label className="form-label">Representante Legal (DNI/Nombre)</label>
+                  <input type="text" name="representante" className="form-control" value={formulario.representante || ''} onChange={manejarCambio} required />
+                </div>
+              )}
 
               <div className="form-group">
                 <label className="form-label">Celular / Teléfono</label>

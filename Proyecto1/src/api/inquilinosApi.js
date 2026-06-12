@@ -19,7 +19,7 @@ const mapToDTO = (data) => ({
   celularTelefono: data.celular,
   direccion: data.direccion,
   correo: data.correo,
-  referencia: data.referencias || "Ninguna"
+  referencia: (data.representante ? `Rep: ${data.representante} | ` : '') + (data.referencias || "Ninguna")
 });
 
 const mapToUpdateDTO = (data) => ({
@@ -27,7 +27,7 @@ const mapToUpdateDTO = (data) => ({
   celularTelefono: data.celular,
   direccion: data.direccion,
   correo: data.correo,
-  referencia: data.referencias || "Ninguna",
+  referencia: (data.representante ? `Rep: ${data.representante} | ` : '') + (data.referencias || "Ninguna"),
   vigente: data.vigente !== undefined ? data.vigente : true
 });
 
