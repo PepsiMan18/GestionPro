@@ -5,7 +5,8 @@ import Header from './components/Header';
 import PanelControl from './pages/PanelControl';
 import Inmuebles from './pages/Inmuebles';
 import Inquilinos from './pages/Inquilinos';
-import Servicios from './pages/Servicios';
+import ConsumoServicios from './pages/ConsumoServicios';
+import EmisionRecibos from './pages/EmisionRecibos';
 import Facturacion from './pages/Facturacion';
 import Contratos from './pages/Contratos';
 import Configuracion from './pages/Configuracion';
@@ -106,29 +107,16 @@ const contratosIniciales = [
   }
 ];
 
-const serviciosIniciales = [
-  {
-    id: 1,
-    idContrato: 1,
-    tipo: 'Agua',
-    periodo: '2026-05',
-    lecturaAnterior: 120,
-    lecturaActual: 125,
-    consumo: 5,
-    monto: 15.00,
-    estado: 'Pendiente'
-  },
-  {
-    id: 2,
-    idContrato: 1,
-    tipo: 'Luz',
-    periodo: '2026-05',
-    lecturaAnterior: 450,
-    lecturaActual: 510,
-    consumo: 60,
-    monto: 42.00,
-    estado: 'Facturado'
-  }
+const conceptosIniciales = [
+  { id: 1, descCorta: 'agua', descripcion: 'Agua', tipo: 'Variable', unidad: 'm3', importe: 0, estado: 'Habilitado' },
+  { id: 2, descCorta: 'luz', descripcion: 'Energía Eléctrica', tipo: 'Variable', unidad: 'kw', importe: 0, estado: 'Habilitado' },
+  { id: 3, descCorta: 'internet', descripcion: 'Internet', tipo: 'Fijo', unidad: '', importe: 15, estado: 'Habilitado' },
+  { id: 4, descCorta: 'vigilancia', descripcion: 'Vigilancia', tipo: 'Fijo', unidad: 'um', importe: 39, estado: 'Habilitado' },
+  { id: 5, descCorta: 'gas', descripcion: 'Gas', tipo: 'Variable', unidad: 'um', importe: 0, estado: 'Habilitado' }
+];
+
+const recibosIniciales = [
+  { id: 1, nroRi: 'RI-0001', idContrato: 1, tipo: 'Consumo de servicios', inquilino: 'Juan Pérez', inmueble: 'A-15', fechaEmision: '2026-06-15', fechaVencimiento: '2026-06-30', periodo: '06/2026', total: 125.00, estado: 'Emitido' }
 ];
 
 function App() {
@@ -136,7 +124,8 @@ function App() {
   const [listaInmuebles, setListaInmuebles] = React.useState(inmueblesIniciales);
   const [listaInquilinos, setListaInquilinos] = React.useState(inquilinosIniciales);
   const [listaContratos, setListaContratos] = React.useState(contratosIniciales);
-  const [listaServicios, setListaServicios] = React.useState(serviciosIniciales);
+  const [listaConceptos, setListaConceptos] = React.useState(conceptosIniciales);
+  const [listaRecibos, setListaRecibos] = React.useState(recibosIniciales);
 
   React.useEffect(() => {
     if (isAuthenticated) {
@@ -193,7 +182,8 @@ function App() {
             <Route path="/inmuebles" element={<Inmuebles listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} />} />
             <Route path="/inquilinos" element={<Inquilinos listaInquilinos={listaInquilinos} setListaInquilinos={setListaInquilinos} listaContratos={listaContratos} />} />
             <Route path="/contratos" element={<Contratos listaContratos={listaContratos} setListaContratos={setListaContratos} listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} listaInquilinos={listaInquilinos} />} />
-            <Route path="/servicios" element={<Servicios listaServicios={listaServicios} setListaServicios={setListaServicios} listaContratos={listaContratos} listaInmuebles={listaInmuebles} />} />
+            <Route path="/consumo-servicios" element={<ConsumoServicios listaConceptos={listaConceptos} setListaConceptos={setListaConceptos} />} />
+            <Route path="/emision-recibos" element={<EmisionRecibos listaRecibos={listaRecibos} setListaRecibos={setListaRecibos} listaContratos={listaContratos} listaConceptos={listaConceptos} listaInquilinos={listaInquilinos} listaInmuebles={listaInmuebles} />} />
             <Route path="/facturacion" element={<Facturacion />} />
             <Route path="/reportes" element={<Reportes />} />
             <Route path="/configuracion" element={<Configuracion />} />

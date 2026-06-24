@@ -35,9 +35,15 @@ const Sidebar = () => {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/servicios" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+            <NavLink to="/consumo-servicios" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
               <i className="ph ph-drop sidebar-icon"></i>
-              Servicios (Agua/Luz)
+              Consumo de Servicios
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/emision-recibos" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
+              <i className="ph ph-receipt sidebar-icon"></i>
+              Emisión de Recibos
             </NavLink>
           </li>
           <li>
