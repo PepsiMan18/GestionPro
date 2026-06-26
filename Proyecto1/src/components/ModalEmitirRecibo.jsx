@@ -51,8 +51,20 @@ const ModalEmitirRecibo = ({
         inquilino: c.nombreInquilino || (inq ? inq.nombre || inq.razonSocial : 'Desconocido'),
         inmueble: c.codigoInmueble || (inm ? inm.codigo : 'Desconocido'),
       });
-      setMostrarDetalle(false);
-      setConceptosActivos([]);
+      
+      if (tipoRi === 'Alquiler de Inmueble') {
+        const montoAlquiler = parseFloat(c.monto) || 0;
+        setConceptosActivos([{
+          id: 'alquiler',
+          descripcion: 'Alquiler de Inmueble (Mes Adelantado)',
+          tipo: 'Fijo',
+          importeCalculado: montoAlquiler
+        }]);
+        setMostrarDetalle(true);
+      } else {
+        setMostrarDetalle(false);
+        setConceptosActivos([]);
+      }
     } else {
       setDatosContrato(null);
       setMostrarDetalle(false);
@@ -267,7 +279,7 @@ const ModalEmitirRecibo = ({
                   
                   <div className="form-group" style={{ gridColumn: '1 / -1', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <h4>Detalle de Conceptos</h4>
-                    {!mostrarDetalle && (
+                    {!mostrarDetalle && tipoRi === 'Consumo de servicios' && (
                       <button className="btn-outline" onClick={activarDetalle}>
                         <i className="ph ph-list-numbers"></i> Activar Detalle
                       </button>
