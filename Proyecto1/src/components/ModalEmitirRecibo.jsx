@@ -152,19 +152,66 @@ const ModalEmitirRecibo = ({
         <div className="modal-body">
           {paso === 1 && (
             <div className="form-grid">
-              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                <label>1. Seleccione el tipo de RI a emitir:</label>
-                <select 
-                  className="form-control" 
-                  value={tipoRi} 
-                  onChange={(e) => setTipoRi(e.target.value)}
-                >
-                  <option value="">-- Seleccione --</option>
-                  <option value="Consumo de servicios">Consumo de servicios</option>
-                  <option value="Alquiler de Inmueble">Alquiler de Inmueble</option>
-                </select>
+              <div style={{ gridColumn: '1 / -1', marginBottom: '1rem' }}>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', textAlign: 'center' }}>¿Qué tipo de recibo deseas generar?</p>
+                
+                <div style={{ display: 'flex', gap: '1rem', flexDirection: 'column' }}>
+                  
+                  <div 
+                    onClick={() => setTipoRi('Consumo de servicios')}
+                    style={{ 
+                      padding: '1.25rem', 
+                      borderRadius: 'var(--radius-md)', 
+                      border: tipoRi === 'Consumo de servicios' ? '2px solid var(--primary)' : '1px solid var(--border-color)', 
+                      backgroundColor: tipoRi === 'Consumo de servicios' ? 'var(--primary-light)' : 'var(--bg-body)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ fontSize: '2.5rem', color: tipoRi === 'Consumo de servicios' ? 'var(--primary)' : 'var(--text-muted)' }}>
+                      <i className="ph ph-drop"></i>
+                    </div>
+                    <div>
+                      <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', color: tipoRi === 'Consumo de servicios' ? 'var(--primary)' : 'var(--text-main)' }}>Consumo de Servicios</h3>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cobro de agua, luz, internet, vigilancia y otros mantenimientos.</p>
+                    </div>
+                  </div>
+
+                  <div 
+                    onClick={() => setTipoRi('Alquiler de Inmueble')}
+                    style={{ 
+                      padding: '1.25rem', 
+                      borderRadius: 'var(--radius-md)', 
+                      border: tipoRi === 'Alquiler de Inmueble' ? '2px solid var(--primary)' : '1px solid var(--border-color)', 
+                      backgroundColor: tipoRi === 'Alquiler de Inmueble' ? 'var(--primary-light)' : 'var(--bg-body)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ fontSize: '2.5rem', color: tipoRi === 'Alquiler de Inmueble' ? 'var(--primary)' : 'var(--text-muted)' }}>
+                      <i className="ph ph-house-line"></i>
+                    </div>
+                    <div>
+                      <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', color: tipoRi === 'Alquiler de Inmueble' ? 'var(--primary)' : 'var(--text-main)' }}>Alquiler de Inmueble</h3>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cuota mensual por el arrendamiento del local u oficina.</p>
+                    </div>
+                  </div>
+
+                </div>
               </div>
-              <div className="form-actions" style={{ gridColumn: '1 / -1' }}>
+              <div className="form-actions" style={{ gridColumn: '1 / -1', marginTop: '0.5rem' }}>
+                <button 
+                  className="btn-outline" 
+                  onClick={onClose}
+                >
+                  Cancelar
+                </button>
                 <button 
                   className="btn-primary" 
                   onClick={() => setPaso(2)} 
