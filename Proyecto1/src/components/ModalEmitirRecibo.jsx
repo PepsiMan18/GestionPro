@@ -44,12 +44,12 @@ const ModalEmitirRecibo = ({
     setContratoId(cid);
     
     if (cid) {
-      const c = listaContratos.find(c => c.id === cid);
-      const inq = listaInquilinos.find(i => i.id === c.idInquilino);
-      const inm = listaInmuebles.find(i => i.id === c.idInmueble);
+      const c = listaContratos.find(c => Number(c.id) === Number(cid));
+      const inq = listaInquilinos.find(i => Number(i.id) === Number(c.idInquilino));
+      const inm = listaInmuebles.find(i => Number(i.id) === Number(c.idInmueble));
       setDatosContrato({
-        inquilino: inq ? inq.nombre || inq.razonSocial : 'Desconocido',
-        inmueble: inm ? inm.codigo : 'Desconocido',
+        inquilino: c.nombreInquilino || (inq ? inq.nombre || inq.razonSocial : 'Desconocido'),
+        inmueble: c.codigoInmueble || (inm ? inm.codigo : 'Desconocido'),
       });
       setMostrarDetalle(false);
       setConceptosActivos([]);
@@ -230,11 +230,15 @@ const ModalEmitirRecibo = ({
                 <label>3. Seleccione Contrato (solo vigentes)</label>
                 <select className="form-control" value={contratoId} onChange={handleContratoChange}>
                   <option value="">-- Seleccione --</option>
-                  {listaContratos.filter(c => c.estado === 'Vigente').map(c => (
-                    <option key={c.id} value={c.id}>
-                      Contrato #{c.id} - Inmueble ID: {c.idInmueble}
-                    </option>
-                  ))}
+                  {listaContratos.filter(c => c.estado === 'Vigente' || c.estado === 'Doc Pendiente').map(c => {
+                    const inm = listaInmuebles.find(i => Number(i.id) === Number(c.idInmueble));
+                    const codInmueble = c.codigoInmueble || (inm ? inm.codigo : c.idInmueble);
+                    return (
+                      <option key={c.id} value={c.id}>
+                        Contrato #{c.id} - Inmueble: {codInmueble}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
