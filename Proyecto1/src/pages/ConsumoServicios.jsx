@@ -62,23 +62,25 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
   const inmuebles = listaInmuebles || [];
   const inquilinos = listaInquilinos || [];
   
-  const contratosVigentes = contratos.filter(c => c.estado === 'Vigente');
+  const contratosVigentes = contratos.filter(c => c.estado === 'Vigente' || c.estado === 'Doc Pendiente');
 
-  const getInmuebleInfo = (idInmueble) => {
-    const inm = inmuebles.find(i => i.id === idInmueble);
+  const getInmuebleInfo = (contrato) => {
+    if (contrato.codigoInmueble) return contrato.codigoInmueble;
+    const inm = inmuebles.find(i => Number(i.id) === Number(contrato.idInmueble));
     return inm ? inm.codigo : 'Desconocido';
   };
 
-  const getInquilinoInfo = (idInquilino) => {
-    const inq = inquilinos.find(i => i.id === idInquilino);
+  const getInquilinoInfo = (contrato) => {
+    if (contrato.nombreInquilino) return contrato.nombreInquilino;
+    const inq = inquilinos.find(i => Number(i.id) === Number(contrato.idInquilino));
     return inq ? (inq.nombre || inq.razonSocial) : 'Desconocido';
   };
 
   const handleOpenRegistrarConsumo = (contrato) => {
     setContratoSeleccionado({
       ...contrato,
-      codigoInmueble: getInmuebleInfo(contrato.idInmueble),
-      nombreInquilino: getInquilinoInfo(contrato.idInquilino)
+      codigoInmueble: getInmuebleInfo(contrato),
+      nombreInquilino: getInquilinoInfo(contrato)
     });
     setShowConsumoModal(true);
   };
@@ -121,8 +123,8 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
               {contratosVigentes.map(contrato => (
                 <tr key={contrato.id}>
                   <td><strong>{contrato.id}</strong></td>
-                  <td>{getInmuebleInfo(contrato.idInmueble)}</td>
-                  <td>{getInquilinoInfo(contrato.idInquilino)}</td>
+                  <td>{getInmuebleInfo(contrato)}</td>
+                  <td>{getInquilinoInfo(contrato)}</td>
                   <td>{contrato.fechaInicio} al {contrato.fechaFin}</td>
                   <td className="text-center">
                     <button 
