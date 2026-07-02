@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import { getInmuebles } from './api/inmueblesApi';
 import { getInquilinos } from './api/inquilinosApi';
 import { getContratos } from './api/contratosApi';
+import { getConceptosConsumo } from './api/conceptosApi';
 import './App.css';
 
 const inmueblesIniciales = [
@@ -158,6 +159,16 @@ function App() {
         })
         .catch(err => {
           console.warn("No se pudo cargar Contratos desde AWS. Usando datos simulados locales:", err);
+        });
+
+      getConceptosConsumo()
+        .then(data => {
+          if (data && data.length > 0) {
+            setListaConceptos(data);
+          }
+        })
+        .catch(err => {
+          console.warn("No se pudo cargar Conceptos desde AWS. Usando datos simulados locales:", err);
         });
     }
   }, [isAuthenticated]);

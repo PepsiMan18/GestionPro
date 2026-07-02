@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createReciboConsumo, agregarDetalleRecibo } from '../api/recibosApi';
 
 const ModalEmitirRecibo = ({ 
   onClose, 
@@ -126,9 +127,46 @@ const ModalEmitirRecibo = ({
     }
 
     setIsLoadingGlobal(true);
-    setTimeout(() => {
-      const nuevoId = Date.now();
-      const nroFormateado = `RI-${String(listaRecibos.length + 1).padStart(4, '0')}`;
+    
+    const procesarRecibo = async () => {
+      let nuevoId = Date.now();
+      let nroFormateado = `RI-${String(listaRecibos.length + 1).padStart(4, '0')}`;
+      let exitoAWS = true;
+      
+      try {
+        const contratoReal = listaContratos.find(c => Number(c.id) === Number(contratoId));
+        
+        // Paso A: Cabecera
+        const cabeceraData = {
+          idInmueble: Number(contratoReal.idInmueble),
+          mesConsumo: periodo,
+          mesCobro: periodo, 
+          usuario: 'admin'
+        };
+        const cabeceraRes = await createReciboConsumo(cabeceraData);
+        if (cabeceraRes && cabeceraRes.idNroRecibo) {
+          nuevoId = cabeceraRes.idNroRecibo;
+        }
+        
+        // Paso B: Detalles
+        for (const c of conceptosActivos) {
+          // Obtener el ID del concepto original asegurando compatibilidad de UI
+          const conceptoOriginalId = c.id === 'alquiler' ? 9 : c.id; 
+          
+          const detalleData = {
+            idConceptoConsumo: Number(conceptoOriginalId),
+            lecturaInicial: c.tipo === 'Variable' ? Number(c.lecturaInicial || 0) : null,
+            fLecturaInicial: c.tipo === 'Variable' ? new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString() : null,
+            lecturaFinal: c.tipo === 'Variable' ? Number(c.lecturaFinal || 0) : null,
+            fLecturaFinal: c.tipo === 'Variable' ? new Date().toISOString() : null,
+            importeManual: c.tipo === 'Variable' ? null : Number(c.importeCalculado)
+          };
+          await agregarDetalleRecibo(nuevoId, detalleData);
+        }
+      } catch (err) {
+        console.warn("Fallo al grabar recibo en AWS, aplicando fallback local:", err);
+        exitoAWS = false;
+      }
       
       const nuevoRI = {
         id: nuevoId,
@@ -142,13 +180,19 @@ const ModalEmitirRecibo = ({
         periodo: periodo,
         total: total,
         estado: 'Emitido',
-        detalle: conceptosActivos // Guardamos para un futuro
+        detalle: conceptosActivos
       };
 
       setListaRecibos([...listaRecibos, nuevoRI]);
       setIsLoadingGlobal(false);
       onClose();
-    }, 1200);
+      
+      if (exitoAWS) {
+        alert("Recibo y detalles generados exitosamente en la base de datos.");
+      }
+    };
+
+    procesarRecibo();
   };
 
   return (
