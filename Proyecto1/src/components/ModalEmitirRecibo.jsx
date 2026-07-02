@@ -9,7 +9,9 @@ const ModalEmitirRecibo = ({
   listaConceptos, 
   listaInquilinos, 
   listaInmuebles,
-  setIsLoadingGlobal
+  setIsLoadingGlobal,
+  lecturasTemporales,
+  setLecturasTemporales
 }) => {
   const [paso, setPaso] = useState(1);
   const [tipoRi, setTipoRi] = useState('');
@@ -75,10 +77,29 @@ const ModalEmitirRecibo = ({
         inmueble: c.codigoInmueble || (inm ? inm.codigo : 'Desconocido'),
       });
       
-      const mesesCalculados = generarMesesContrato(c.fechaInicio, c.fechaFin);
+      let mesesCalculados = generarMesesContrato(c.fechaInicio, c.fechaFin);
+      
+      if (tipoRi === 'Consumo de servicios') {
+         const hoy = new Date();
+         const mesActual = hoy.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+         const actualCap = mesActual.charAt(0).toUpperCase() + mesActual.slice(1);
+         
+         const pasado = new Date();
+         pasado.setMonth(pasado.getMonth() - 1);
+         const mesPasado = pasado.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+         const pasadoCap = mesPasado.charAt(0).toUpperCase() + mesPasado.slice(1);
+         
+         mesesCalculados = mesesCalculados.filter(m => m === actualCap || m === pasadoCap);
+         
+         if (mesesCalculados.length === 0) {
+             const ultimo = generarMesesContrato(c.fechaInicio, c.fechaFin).pop();
+             if (ultimo) mesesCalculados.push(ultimo);
+         }
+      }
+      
       setMesesDisponibles(mesesCalculados);
       if (mesesCalculados.length > 0) {
-        setPeriodo(mesesCalculados[0]);
+        setPeriodo(mesesCalculados[mesesCalculados.length - 1]);
       }
       
       if (tipoRi === 'Alquiler de Inmueble') {
@@ -106,12 +127,28 @@ const ModalEmitirRecibo = ({
     setIsLoadingGlobal(true);
     setTimeout(() => {
       const habilitados = listaConceptos.filter(c => c.estado === 'Habilitado');
-      const preparados = habilitados.map(c => ({
-        ...c,
-        lecturaInicial: c.tipo === 'Variable' ? 0 : null,
-        lecturaFinal: c.tipo === 'Variable' ? 0 : null,
-        importeCalculado: c.tipo === 'Fijo' ? c.importe : 0
-      }));
+      const temps = (lecturasTemporales && lecturasTemporales[contratoId]) ? lecturasTemporales[contratoId] : {};
+      
+      const preparados = habilitados.map(c => {
+        let inicial = 0;
+        let final = 0;
+        if (c.tipo === 'Variable' && temps[c.id]) {
+          inicial = parseFloat(temps[c.id].lecturaInicial) || 0;
+          final = parseFloat(temps[c.id].lecturaFinal) || 0;
+        }
+        
+        const consumo = Math.max(0, final - inicial);
+        let precio = 1;
+        if (c.descCorta.toLowerCase().includes('agua')) precio = PRECIO_UNITARIO_AGUA;
+        else if (c.descCorta.toLowerCase().includes('luz') || c.descCorta.toLowerCase().includes('energ')) precio = PRECIO_UNITARIO_LUZ;
+        
+        return {
+          ...c,
+          lecturaInicial: c.tipo === 'Variable' ? inicial : null,
+          lecturaFinal: c.tipo === 'Variable' ? final : null,
+          importeCalculado: c.tipo === 'Fijo' ? c.importe : (consumo * precio)
+        };
+      });
       setConceptosActivos(preparados);
       setMostrarDetalle(true);
       setIsLoadingGlobal(false);
@@ -218,6 +255,13 @@ const ModalEmitirRecibo = ({
       
       if (exitoAWS) {
         alert("Recibo y detalles generados exitosamente en la base de datos.");
+        if (setLecturasTemporales) {
+          setLecturasTemporales(prev => {
+            const copia = { ...prev };
+            delete copia[contratoId];
+            return copia;
+          });
+        }
       }
     };
 

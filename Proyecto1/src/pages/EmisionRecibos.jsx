@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ModalEmitirRecibo from '../components/ModalEmitirRecibo';
 
-const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaConceptos, listaInquilinos, listaInmuebles }) => {
+const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaConceptos, listaInquilinos, listaInmuebles, lecturasTemporales, setLecturasTemporales }) => {
   const [showModal, setShowModal] = useState(false);
   const [filtroNro, setFiltroNro] = useState('');
   const [filtroInquilino, setFiltroInquilino] = useState('');
@@ -156,6 +156,8 @@ const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaCo
           listaInquilinos={listaInquilinos}
           listaInmuebles={listaInmuebles}
           setIsLoadingGlobal={setIsLoading}
+          lecturasTemporales={lecturasTemporales}
+          setLecturasTemporales={setLecturasTemporales}
         />
       )}
     </div>

@@ -127,6 +127,10 @@ function App() {
   const [listaContratos, setListaContratos] = React.useState(contratosIniciales);
   const [listaConceptos, setListaConceptos] = React.useState(conceptosIniciales);
   const [listaRecibos, setListaRecibos] = React.useState(recibosIniciales);
+  
+  // Estado global para guardar lecturas temporales antes de emitir recibos
+  // Formato: { [idContrato]: [ { idConcepto, lecturaInicial, lecturaFinal } ] }
+  const [lecturasTemporales, setLecturasTemporales] = React.useState({});
 
   React.useEffect(() => {
     if (isAuthenticated) {
@@ -193,8 +197,8 @@ function App() {
             <Route path="/inmuebles" element={<Inmuebles listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} />} />
             <Route path="/inquilinos" element={<Inquilinos listaInquilinos={listaInquilinos} setListaInquilinos={setListaInquilinos} listaContratos={listaContratos} />} />
             <Route path="/contratos" element={<Contratos listaContratos={listaContratos} setListaContratos={setListaContratos} listaInmuebles={listaInmuebles} setListaInmuebles={setListaInmuebles} listaInquilinos={listaInquilinos} />} />
-            <Route path="/consumo-servicios" element={<ConsumoServicios listaConceptos={listaConceptos} setListaConceptos={setListaConceptos} listaContratos={listaContratos} listaInmuebles={listaInmuebles} listaInquilinos={listaInquilinos} />} />
-            <Route path="/emision-recibos" element={<EmisionRecibos listaRecibos={listaRecibos} setListaRecibos={setListaRecibos} listaContratos={listaContratos} listaConceptos={listaConceptos} listaInquilinos={listaInquilinos} listaInmuebles={listaInmuebles} />} />
+            <Route path="/consumo-servicios" element={<ConsumoServicios listaConceptos={listaConceptos} setListaConceptos={setListaConceptos} listaContratos={listaContratos} listaInmuebles={listaInmuebles} listaInquilinos={listaInquilinos} lecturasTemporales={lecturasTemporales} setLecturasTemporales={setLecturasTemporales} />} />
+            <Route path="/emision-recibos" element={<EmisionRecibos listaRecibos={listaRecibos} setListaRecibos={setListaRecibos} listaContratos={listaContratos} listaConceptos={listaConceptos} listaInquilinos={listaInquilinos} listaInmuebles={listaInmuebles} lecturasTemporales={lecturasTemporales} setLecturasTemporales={setLecturasTemporales} />} />
             <Route path="/facturacion" element={<Facturacion />} />
             <Route path="/reportes" element={<Reportes />} />
             <Route path="/configuracion" element={<Configuracion />} />

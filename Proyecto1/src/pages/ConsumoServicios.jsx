@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, listaInmuebles, listaInquilinos }) => {
+const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, listaInmuebles, listaInquilinos, lecturasTemporales, setLecturasTemporales }) => {
   // === ESTADOS PARA TARIFARIO (CONCEPTOS) ===
   const [showTarifarioModal, setShowTarifarioModal] = useState(false);
   const [showConceptoForm, setShowConceptoForm] = useState(false);
@@ -13,6 +13,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
   // === ESTADOS PARA REGISTRAR CONSUMOS ===
   const [showConsumoModal, setShowConsumoModal] = useState(false);
   const [contratoSeleccionado, setContratoSeleccionado] = useState(null);
+  const [lecturasActivas, setLecturasActivas] = useState({});
 
   // === LÓGICA TARIFARIO ===
   const handleOpenConceptoForm = (concepto = null) => {
@@ -82,12 +83,38 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
       codigoInmueble: getInmuebleInfo(contrato),
       nombreInquilino: getInquilinoInfo(contrato)
     });
+    
+    const temps = (lecturasTemporales && lecturasTemporales[contrato.id]) ? lecturasTemporales[contrato.id] : {};
+    setLecturasActivas(temps);
+    
     setShowConsumoModal(true);
   };
 
   const handleCloseConsumoModal = () => {
     setShowConsumoModal(false);
     setContratoSeleccionado(null);
+    setLecturasActivas({});
+  };
+  
+  const handleLecturaTemporalChange = (idConcepto, campo, valor) => {
+    setLecturasActivas(prev => ({
+      ...prev,
+      [idConcepto]: {
+        ...prev[idConcepto],
+        [campo]: valor
+      }
+    }));
+  };
+  
+  const handleGuardarTemporales = () => {
+    if (setLecturasTemporales && contratoSeleccionado) {
+      setLecturasTemporales(prev => ({
+        ...prev,
+        [contratoSeleccionado.id]: lecturasActivas
+      }));
+    }
+    alert('Consumos guardados temporalmente. Podrás procesarlos al emitir el recibo de este mes.');
+    handleCloseConsumoModal();
   };
 
   // Filtra los servicios habilitados
@@ -190,9 +217,23 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                             <span className="text-muted">${Number(concepto.importe).toFixed(2)} / mes</span>
                           ) : (
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                              <input type="number" className="form-control" style={{ width: '80px', padding: '0.3rem' }} placeholder="Inicial" />
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                style={{ width: '80px', padding: '0.3rem' }} 
+                                placeholder="Inicial" 
+                                value={lecturasActivas[concepto.id]?.lecturaInicial || ''}
+                                onChange={(e) => handleLecturaTemporalChange(concepto.id, 'lecturaInicial', e.target.value)}
+                              />
                               <span>-</span>
-                              <input type="number" className="form-control" style={{ width: '80px', padding: '0.3rem' }} placeholder="Final" />
+                              <input 
+                                type="number" 
+                                className="form-control" 
+                                style={{ width: '80px', padding: '0.3rem' }} 
+                                placeholder="Final" 
+                                value={lecturasActivas[concepto.id]?.lecturaFinal || ''}
+                                onChange={(e) => handleLecturaTemporalChange(concepto.id, 'lecturaFinal', e.target.value)}
+                              />
                               <span className="text-muted">{concepto.unidad}</span>
                             </div>
                           )}
@@ -213,10 +254,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
 
               <div className="form-actions" style={{ marginTop: '1.5rem' }}>
                 <button className="btn-outline" onClick={handleCloseConsumoModal}>Cerrar</button>
-                <button className="btn-primary" onClick={() => {
-                  alert('Consumos guardados temporalmente. Podrás procesarlos al emitir el recibo de este mes.');
-                  handleCloseConsumoModal();
-                }}>
+                <button className="btn-primary" onClick={handleGuardarTemporales}>
                   Guardar Lecturas
                 </button>
               </div>
