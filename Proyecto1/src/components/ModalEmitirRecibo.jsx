@@ -19,6 +19,7 @@ const ModalEmitirRecibo = ({
   const [fechaEmision, setFechaEmision] = useState(new Date().toISOString().split('T')[0]);
   const [fechaVencimiento, setFechaVencimiento] = useState('');
   const [periodo, setPeriodo] = useState('');
+  const [mesesDisponibles, setMesesDisponibles] = useState([]);
   
   const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const [conceptosActivos, setConceptosActivos] = useState([]);
@@ -28,17 +29,38 @@ const ModalEmitirRecibo = ({
   const PRECIO_UNITARIO_LUZ = 1.20;
 
   useEffect(() => {
-    // Generar periodo actual MM/YYYY
+    // Generar periodo actual MM/YYYY por defecto si no hay contrato
     const hoy = new Date();
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    const anio = hoy.getFullYear();
-    setPeriodo(`${mes}/${anio}`);
+    const opcionesMes = { month: 'long', year: 'numeric' };
+    const nombreMes = hoy.toLocaleDateString('es-ES', opcionesMes);
+    setPeriodo(nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1));
     
     // Asumimos 15 días de vencimiento
     const fv = new Date();
     fv.setDate(fv.getDate() + 15);
     setFechaVencimiento(fv.toISOString().split('T')[0]);
   }, []);
+
+  const generarMesesContrato = (fechaInicio, fechaFin) => {
+    const meses = [];
+    if (!fechaInicio || !fechaFin) return meses;
+    
+    // Evitar problemas de zona horaria agregando T12:00:00
+    let actual = new Date(fechaInicio + 'T12:00:00');
+    const fin = new Date(fechaFin + 'T12:00:00');
+    
+    const opcionesMes = { month: 'long', year: 'numeric' };
+    
+    while (actual <= fin || (actual.getMonth() === fin.getMonth() && actual.getFullYear() === fin.getFullYear())) {
+      const nombreMes = actual.toLocaleDateString('es-ES', opcionesMes);
+      const nombreCapitalizado = nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+      if (!meses.includes(nombreCapitalizado)) {
+        meses.push(nombreCapitalizado);
+      }
+      actual.setMonth(actual.getMonth() + 1);
+    }
+    return meses;
+  };
 
   const handleContratoChange = (e) => {
     const cid = parseInt(e.target.value);
@@ -52,6 +74,12 @@ const ModalEmitirRecibo = ({
         inquilino: c.nombreInquilino || (inq ? inq.nombre || inq.razonSocial : 'Desconocido'),
         inmueble: c.codigoInmueble || (inm ? inm.codigo : 'Desconocido'),
       });
+      
+      const mesesCalculados = generarMesesContrato(c.fechaInicio, c.fechaFin);
+      setMesesDisponibles(mesesCalculados);
+      if (mesesCalculados.length > 0) {
+        setPeriodo(mesesCalculados[0]);
+      }
       
       if (tipoRi === 'Alquiler de Inmueble') {
         const montoAlquiler = parseFloat(c.monto) || 0;
@@ -70,6 +98,7 @@ const ModalEmitirRecibo = ({
       setDatosContrato(null);
       setMostrarDetalle(false);
       setConceptosActivos([]);
+      setMesesDisponibles([]);
     }
   };
 
@@ -317,8 +346,16 @@ const ModalEmitirRecibo = ({
                     <input type="date" className="form-control" value={fechaVencimiento} onChange={(e) => setFechaVencimiento(e.target.value)} />
                   </div>
                   <div className="form-group">
-                    <label>Período</label>
-                    <input type="text" className="form-control" value={periodo} readOnly disabled />
+                    <label>Período a Cobrar</label>
+                    <select className="form-control" value={periodo} onChange={(e) => setPeriodo(e.target.value)}>
+                      {mesesDisponibles.length > 0 ? (
+                        mesesDisponibles.map((mes, index) => (
+                          <option key={index} value={mes}>{mes}</option>
+                        ))
+                      ) : (
+                        <option value={periodo}>{periodo}</option>
+                      )}
+                    </select>
                   </div>
                   
                   <div className="form-group" style={{ gridColumn: '1 / -1', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
