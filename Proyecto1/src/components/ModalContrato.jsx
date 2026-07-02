@@ -11,6 +11,11 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
     fechaInicio: '',
     fechaFin: '',
     monto: '',
+    tipoNegocio: '',
+    representante: '',
+    modalidadPago: 'Adelantado',
+    mesesGarantia: 1,
+    nroMeses: 0,
     archivo: null
   });
 
@@ -25,6 +30,11 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
         fechaInicio: '',
         fechaFin: '',
         monto: '',
+        tipoNegocio: '',
+        representante: '',
+        modalidadPago: 'Adelantado',
+        mesesGarantia: 1,
+        nroMeses: 0,
         archivo: null
       });
     }
@@ -47,6 +57,18 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
         }
       } else if (name === 'idInmueble' && !value) {
         nextForm.monto = '';
+      } else if (name === 'fechaInicio' || name === 'fechaFin') {
+        const dInicio = name === 'fechaInicio' ? value : prev.fechaInicio;
+        const dFin = name === 'fechaFin' ? value : prev.fechaFin;
+        if (dInicio && dFin) {
+          const d1 = new Date(dInicio);
+          const d2 = new Date(dFin);
+          let months = (d2.getFullYear() - d1.getFullYear()) * 12 + (d2.getMonth() - d1.getMonth());
+          if (d2.getDate() < d1.getDate()) months--;
+          nextForm.nroMeses = months > 0 ? months : 0;
+        } else {
+          nextForm.nroMeses = 0;
+        }
       }
       return nextForm;
     });
@@ -104,7 +126,35 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
               </div>
 
               <div className="form-group">
-                <label className="form-label">Monto de Alquiler Base Acordado ($)</label>
+                <label className="form-label">Duración (Meses)</label>
+                <input type="number" name="nroMeses" className="form-control" value={formulario.nroMeses} readOnly style={{backgroundColor: 'var(--bg-card-alt)'}} />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Tipo de Negocio</label>
+                <input type="text" name="tipoNegocio" className="form-control" value={formulario.tipoNegocio} onChange={manejarCambio} required disabled={esEdicion} placeholder="Ej. Venta de ropa" />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Representante (Si aplica)</label>
+                <input type="text" name="representante" className="form-control" value={formulario.representante} onChange={manejarCambio} required disabled={esEdicion} placeholder="Nombre del representante" />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Modalidad de Pago</label>
+                <select name="modalidadPago" className="form-control" value={formulario.modalidadPago} onChange={manejarCambio} disabled={esEdicion}>
+                  <option value="Adelantado">Adelantado</option>
+                  <option value="Vencido">Vencido</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Meses de Garantía</label>
+                <input type="number" name="mesesGarantia" className="form-control" value={formulario.mesesGarantia} onChange={manejarCambio} required disabled={esEdicion} min="0" max="12" />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Monto de Alquiler Base ($)</label>
                 <input type="number" name="monto" className="form-control" value={formulario.monto} readOnly style={{backgroundColor: 'var(--bg-card-alt)'}} title="El monto es fijado por el Inmueble" />
               </div>
 

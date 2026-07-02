@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import TablaContratos from '../components/TablaContratos';
 import ModalContrato from '../components/ModalContrato';
-import { createContrato, uploadContratoPdf, finalizarContratoApi, renovarContratoApi } from '../api/contratosApi';
+import { createContrato, uploadContratoPdf, finalizarContratoApi, renovarContratoApi, activarContratoApi } from '../api/contratosApi';
+import { generarRecibosIniciales } from '../api/recibosApi';
 
 const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setListaInmuebles, listaInquilinos }) => {
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -33,13 +34,19 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
       setListaContratos(prev => prev.map(c => c.id === datos.id ? { ...c, ...datos } : c));
     } else {
       const dto = {
-        IdInquilino: Number(datos.idInquilino),
-        IdInmueble: Number(datos.idInmueble),
-        FechaInicio: datos.fechaInicio,
-        FechaVcmto: datos.fechaFin,
-        RentaMensual: Number(datos.monto),
-        NroMeses: 12,
-        NroMesPPago: 12
+        fechaContrato: new Date().toISOString().split('T')[0],
+        idInquilino: Number(datos.idInquilino),
+        representante: datos.representante || null,
+        tipoNegocio: datos.tipoNegocio,
+        fechaInicio: datos.fechaInicio,
+        nroMeses: Number(datos.nroMeses),
+        idMoneda: 1,
+        garantia: Number(datos.monto) * Number(datos.mesesGarantia),
+        idInmueble: Number(datos.idInmueble),
+        rentaMensual: Number(datos.monto),
+        mesesGarantia: Number(datos.mesesGarantia),
+        modalidadPago: datos.modalidadPago,
+        cuotasPendientes: Number(datos.nroMeses)
       };
       
       let nuevoId = Date.now();
@@ -59,18 +66,41 @@ const Contratos = ({ listaContratos, setListaContratos, listaInmuebles, setLista
       };
       
       setListaContratos(prev => [nuevoContrato, ...prev]);
-      setListaInmuebles(prev => prev.map(inm => inm.id === Number(datos.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+      // NO actualizamos el Inmueble a Ocupado aún, porque nace en Doc Pendiente (HU-05)
     }
   };
 
   const subirPdfContrato = async (idContrato, file) => {
     try {
        await uploadContratoPdf(idContrato, file);
+       const urlDocumento = `https://s3.amazonaws.com/sisalq/contratos/${file.name}`;
+       
+       // Activar el contrato en AWS
+       await activarContratoApi(idContrato, urlDocumento);
+       
+       // Generar recibos iniciales
+       try {
+         await generarRecibosIniciales(idContrato, 'admin');
+       } catch (reciboErr) {
+         console.warn("Recibos iniciales fallback local:", reciboErr);
+       }
+
        setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Vigente', archivo: file.name } : c));
-       alert("Documento subido y contrato activado con éxito.");
+       
+       // Pasar el inmueble a Ocupado localmente
+       const contratoObj = listaContratos.find(c => c.id === idContrato);
+       if (contratoObj) {
+         setListaInmuebles(prev => prev.map(inm => inm.id === Number(contratoObj.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+       }
+
+       alert("Documento subido, contrato activado y recibos iniciales generados con éxito.");
     } catch(err) {
-       console.warn("Fallo al subir PDF en AWS, simulando en local:", err);
+       console.warn("Fallo al activar en AWS, simulando en local:", err);
        setListaContratos(prev => prev.map(c => c.id === idContrato ? { ...c, estado: 'Vigente', archivo: file.name } : c));
+       const contratoObj = listaContratos.find(c => c.id === idContrato);
+       if (contratoObj) {
+         setListaInmuebles(prev => prev.map(inm => inm.id === Number(contratoObj.idInmueble) ? { ...inm, estado: 'Ocupado' } : inm));
+       }
     }
   };
 

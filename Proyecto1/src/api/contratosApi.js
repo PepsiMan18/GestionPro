@@ -43,6 +43,19 @@ export async function finalizarContratoApi(id) {
   return response.json();
 }
 
+export async function activarContratoApi(id, urlDocumento) {
+  const response = await apiFetch(`/api/contratos/${id}/activar`, {
+    method: 'PUT',
+    body: JSON.stringify({ urlDocumento }),
+  });
+  if (!response) return null;
+  if (!response.ok) {
+    const msg = await response.text();
+    throw new Error(msg || 'Error al activar contrato');
+  }
+  return response.json();
+}
+
 export async function renovarContratoApi(id, data) {
   const response = await apiFetch(`/api/contratos/${id}/renovar`, {
     method: 'PUT',
