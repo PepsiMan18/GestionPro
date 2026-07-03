@@ -19,10 +19,24 @@ const TablaInquilinos = ({ listaInquilinos = [], listaContratos = [], alEditarIn
           </thead>
           <tbody>
             {listaInquilinos.map((item) => {
-              const tieneContrato = listaContratos.some(c => 
-                Number(c.idInquilino) === Number(item.id) && 
-                (c.estado === 'Vigente' || c.estado === 'Doc Pendiente' || c.estadoContrato === 'Renovado' || c.estadoContrato === 'Vigente')
-              );
+              const tieneContrato = listaContratos.some(c => {
+                const matchId = Number(c.idInquilino) === Number(item.id);
+                const matchNombre = c.nombreInquilino && item.nombre && c.nombreInquilino.toLowerCase().trim() === item.nombre.toLowerCase().trim();
+                
+                if (!matchId && !matchNombre) return false;
+                
+                if (c.estado === 'Vigente' || c.estado === 'Doc Pendiente' || c.estado === 'Por Vencer' || c.estadoContrato === 'Renovado' || c.estadoContrato === 'Vigente') return true;
+                if (c.estado === 'Finalizado' || c.estado === 'Anulado') return false;
+                
+                if (c.fechaFin) {
+                  const hoy = new Date();
+                  const fin = new Date(c.fechaFin);
+                  const diffDays = Math.ceil((fin - hoy) / (1000 * 60 * 60 * 24));
+                  return diffDays >= 0;
+                }
+                
+                return false;
+              });
               const estadoBadge = tieneContrato ? 'Con Contrato' : 'Sin Contrato';
               const badgeClass = tieneContrato ? 'badge-occupied' : 'badge-vacant';
 

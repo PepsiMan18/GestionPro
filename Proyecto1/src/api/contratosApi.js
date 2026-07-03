@@ -2,8 +2,8 @@ import { apiFetch } from './config';
 
 const mapFromDTO = (dto) => ({
   id: dto.idContrato || dto.id || Date.now(),
-  idInmueble: dto.idInmueble,
-  idInquilino: dto.idInquilino,
+  idInmueble: dto.idInmueble || dto.inmuebleId,
+  idInquilino: dto.idInquilino || dto.inquilinoId,
   codigoInmueble: dto.codigoInmueble,
   nombreInquilino: dto.nombreInquilino,
   fechaInicio: dto.fechaInicio,
