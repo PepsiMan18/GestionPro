@@ -79,6 +79,12 @@ const ModalEmitirRecibo = ({
       
       let mesesCalculados = generarMesesContrato(c.fechaInicio, c.fechaFin);
       
+      // Filtrar meses que ya fueron cobrados (no anulados)
+      const recibosValidos = listaRecibos.filter(r => Number(r.idContrato) === Number(cid) && r.tipo === tipoRi && r.estado !== 'Anulado');
+      const mesesYaCobrados = recibosValidos.map(r => r.periodo);
+      
+      mesesCalculados = mesesCalculados.filter(m => !mesesYaCobrados.includes(m));
+      
       if (tipoRi === 'Consumo de servicios') {
          const hoy = new Date();
          const mesActual = hoy.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
@@ -93,13 +99,15 @@ const ModalEmitirRecibo = ({
          
          if (mesesCalculados.length === 0) {
              const ultimo = generarMesesContrato(c.fechaInicio, c.fechaFin).pop();
-             if (ultimo) mesesCalculados.push(ultimo);
+             if (ultimo && !mesesYaCobrados.includes(ultimo)) mesesCalculados.push(ultimo);
          }
       }
       
       setMesesDisponibles(mesesCalculados);
       if (mesesCalculados.length > 0) {
         setPeriodo(mesesCalculados[mesesCalculados.length - 1]);
+      } else {
+        setPeriodo('Todos los meses cobrados');
       }
       
       if (tipoRi === 'Alquiler de Inmueble') {
@@ -473,7 +481,7 @@ const ModalEmitirRecibo = ({
 
               <div className="form-actions" style={{ gridColumn: '1 / -1', marginTop: '1rem' }}>
                 <button className="btn-outline" onClick={() => setPaso(1)}>Atrás</button>
-                <button className="btn-primary" onClick={handleGrabar} disabled={!mostrarDetalle || calcularTotal() <= 0}>
+                <button className="btn-primary" onClick={handleGrabar} disabled={!mostrarDetalle || calcularTotal() <= 0 || periodo === 'Todos los meses cobrados'}>
                   Grabar
                 </button>
               </div>

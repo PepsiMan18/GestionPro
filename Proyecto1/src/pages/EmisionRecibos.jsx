@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ModalEmitirRecibo from '../components/ModalEmitirRecibo';
+import { anularReciboApi } from '../api/recibosApi';
 
 const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaConceptos, listaInquilinos, listaInmuebles, lecturasTemporales, setLecturasTemporales }) => {
   const [showModal, setShowModal] = useState(false);
@@ -18,14 +19,18 @@ const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaCo
     );
   });
 
-  const handleAnular = (id) => {
+  const handleAnular = async (id) => {
     if (window.confirm('¿Está seguro de anular este recibo?')) {
       setIsLoading(true);
-      // Simulando llamada a API
-      setTimeout(() => {
-        setListaRecibos(listaRecibos.map(r => r.id === id ? { ...r, estado: 'Anulado' } : r));
-        setIsLoading(false);
-      }, 1000);
+      
+      try {
+        await anularReciboApi(id);
+      } catch (err) {
+        console.warn("Fallo al anular recibo en AWS, aplicando fallback local:", err);
+      }
+      
+      setListaRecibos(listaRecibos.map(r => r.id === id ? { ...r, estado: 'Anulado' } : r));
+      setIsLoading(false);
     }
   };
 

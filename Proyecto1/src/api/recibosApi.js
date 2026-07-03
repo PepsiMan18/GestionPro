@@ -52,3 +52,16 @@ export async function agregarDetalleRecibo(idRecibo, data) {
   }
   return response.json();
 }
+
+export async function anularReciboApi(idRecibo) {
+  const response = await apiFetch(`/api/recibos-consumo/${idRecibo}/anular`, {
+    method: 'PUT',
+  });
+  
+  if (!response) return null;
+  if (!response.ok) {
+    const msg = await response.text();
+    throw new Error(msg || 'Error al anular recibo');
+  }
+  return response.json();
+}
