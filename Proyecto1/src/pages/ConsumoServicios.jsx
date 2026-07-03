@@ -214,7 +214,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                         </td>
                         <td>
                           {concepto.tipo === 'Fijo' ? (
-                            <span className="text-muted">${Number(concepto.importe).toFixed(2)} / mes</span>
+                            <span className="text-muted">S/ {Number(concepto.importe).toFixed(2)} / mes</span>
                           ) : (
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                               <input 
@@ -239,7 +239,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                           )}
                         </td>
                         <td>
-                          {concepto.tipo === 'Fijo' ? `$${Number(concepto.importe).toFixed(2)}` : <span className="text-muted">Calculado al emitir recibo</span>}
+                          {concepto.tipo === 'Fijo' ? `S/ ${Number(concepto.importe).toFixed(2)}` : <span className="text-muted">Calculado al emitir recibo</span>}
                         </td>
                       </tr>
                     ))}
@@ -303,7 +303,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                         </span>
                       </td>
                       <td>{concepto.unidad || '-'}</td>
-                      <td>{concepto.tipo === 'Fijo' ? `$${Number(concepto.importe).toFixed(2)}` : '-'}</td>
+                      <td>{concepto.tipo === 'Fijo' ? `S/ ${Number(concepto.importe).toFixed(2)}` : '-'}</td>
                       <td>
                         <span className={`badge ${concepto.estado === 'Habilitado' ? 'badge-success' : 'badge-error'}`}>
                           {concepto.estado}

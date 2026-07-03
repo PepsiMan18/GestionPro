@@ -19,7 +19,7 @@ const Inmuebles = ({ listaInmuebles, setListaInmuebles }) => {
   };
 
   const guardarInmueble = async (datosFormulario) => {
-    const alquilerFormateado = `$${Number(datosFormulario.alquiler).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+    const alquilerFormateado = `S/ ${Number(datosFormulario.alquiler).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
     
     if (datosFormulario.id) {
       try {

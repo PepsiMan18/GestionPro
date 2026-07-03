@@ -55,7 +55,7 @@ const mapFromDTO = (dto) => ({
   descripcion: dto.descripcionInmueble || '',
   tipo: dto.tipoInmueble || 'Local Comercial',
   sector: dto.sector || 'Mercado',
-  alquiler: dto.precioAlquiler ? `$${Number(dto.precioAlquiler).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '$0.00',
+  alquiler: dto.precioAlquiler ? `S/ ${Number(dto.precioAlquiler).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : 'S/ 0.00',
   estado: dto.estadoInmueble || 'Disponible',
   area: '', // Backend no devuelve area
   piso: dto.pisoInmueble || '',

@@ -113,7 +113,7 @@ const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaCo
                   <td>{recibo.inmueble}</td>
                   <td>{recibo.fechaEmision}</td>
                   <td>{recibo.periodo}</td>
-                  <td><strong>${recibo.total.toFixed(2)}</strong></td>
+                  <td><strong>S/ {recibo.total.toFixed(2)}</strong></td>
                   <td>
                     <span className={`badge ${recibo.estado === 'Emitido' ? 'badge-success' : 'badge-error'}`}>
                       {recibo.estado}

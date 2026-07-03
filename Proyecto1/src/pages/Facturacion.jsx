@@ -39,7 +39,7 @@ const Facturacion = () => {
                   <div style={{fontSize: '0.75rem', color: 'var(--text-muted)'}}>Calle Los Pinos 123</div>
                 </td>
                 <td>Alquiler Octubre</td>
-                <td className="price-text">$1,000.00</td>
+                <td className="price-text">S/ 1,000.00</td>
                 <td>Transferencia Bancaria</td>
                 <td>
                   <button className="btn-outline" style={{ fontSize: '0.875rem' }}>

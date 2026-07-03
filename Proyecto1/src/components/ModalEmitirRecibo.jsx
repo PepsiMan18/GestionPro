@@ -428,7 +428,7 @@ const ModalEmitirRecibo = ({
                             <th>U.M.</th>
                             <th>Lect. Inicial</th>
                             <th>Lect. Final</th>
-                            <th>Importe ($)</th>
+                            <th>Importe (S/)</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -470,7 +470,7 @@ const ModalEmitirRecibo = ({
                         <tfoot>
                           <tr>
                             <td colSpan="4" className="text-right"><strong>TOTAL A PAGAR:</strong></td>
-                            <td><strong style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>${calcularTotal().toFixed(2)}</strong></td>
+                            <td><strong style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>S/ {calcularTotal().toFixed(2)}</strong></td>
                           </tr>
                         </tfoot>
                       </table>

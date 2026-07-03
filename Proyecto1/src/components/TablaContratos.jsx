@@ -51,7 +51,7 @@ const TablaContratos = ({ listaContratos, listaInmuebles, listaInquilinos, alEdi
                     <div style={{fontSize: '0.875rem'}}>{contrato.fechaInicio} al</div>
                     <div style={{fontWeight: 600}}>{contrato.fechaFin}</div>
                   </td>
-                  <td className="price-text">${contrato.monto}</td>
+                  <td className="price-text">S/ {contrato.monto}</td>
                   <td><span className={`badge ${estado.clase}`}>{estado.texto}</span></td>
                   <td>
                     {contrato.estado === 'Doc Pendiente' ? (

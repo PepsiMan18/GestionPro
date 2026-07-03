@@ -49,9 +49,9 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
       if (name === 'idInmueble' && value) {
         const inmuebleElegido = listaInmuebles.find(i => Number(i.id) === Number(value));
         if (inmuebleElegido) {
-          // Extraer número de formato "$1,000.00" o si ya es numérico
+          // Extraer número de formato "S/ 1,000.00" o si ya es numérico
           const precio = typeof inmuebleElegido.alquiler === 'string' 
-            ? inmuebleElegido.alquiler.replace(/[^0-9.]/g, '') 
+            ? inmuebleElegido.alquiler.replace('S/', '').replace(/[^0-9.]/g, '') 
             : inmuebleElegido.alquiler;
           nextForm.monto = precio || '';
         }
@@ -154,7 +154,7 @@ const ModalContrato = ({ abierto, alCerrar, datosContrato, alGuardar, listaInmue
               </div>
 
               <div className="form-group">
-                <label className="form-label">Monto de Alquiler Base ($)</label>
+                <label className="form-label">Monto de Alquiler Base (S/)</label>
                 <input type="number" name="monto" className="form-control" value={formulario.monto} readOnly style={{backgroundColor: 'var(--bg-card-alt)'}} title="El monto es fijado por el Inmueble" />
               </div>
 

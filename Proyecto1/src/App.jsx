@@ -28,7 +28,7 @@ const inmueblesIniciales = [
     estado: 'Ocupado',
     area: '20 m2',
     piso: '1',
-    alquiler: '$1,000.00',
+    alquiler: 'S/ 1,000.00',
     incluyeServicios: 'N',
     imagen: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=200&h=150'
   },
@@ -41,7 +41,7 @@ const inmueblesIniciales = [
     estado: 'Desocupado',
     area: '45 m2',
     piso: '2',
-    alquiler: '$1,200.00',
+    alquiler: 'S/ 1,200.00',
     incluyeServicios: 'S',
     imagen: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=200&h=150'
   },

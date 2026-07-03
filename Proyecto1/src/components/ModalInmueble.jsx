@@ -25,7 +25,7 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
         descripcion: datosInmueble.descripcion || '',
         tipo: datosInmueble.tipo || 'Local Comercial',
         sector: datosInmueble.sector || 'Mercado',
-        alquiler: datosInmueble.alquiler ? datosInmueble.alquiler.replace('$', '').replace(',', '') : '',
+        alquiler: datosInmueble.alquiler ? datosInmueble.alquiler.replace('S/', '').replace(',', '').trim() : '',
         estado: datosInmueble.estado || 'Disponible',
         area: datosInmueble.area || '',
         piso: datosInmueble.piso || '',
@@ -161,7 +161,7 @@ const ModalInmueble = ({ abierto, alCerrar, datosInmueble, alGuardar }) => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Precio Alquiler Base ($)</label>
+                <label className="form-label">Precio Alquiler Base (S/)</label>
                 <input 
                   type="number" 
                   name="alquiler" 
