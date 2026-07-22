@@ -200,7 +200,7 @@ function App() {
             <Route path="/consumo-servicios" element={<ConsumoServicios listaConceptos={listaConceptos} setListaConceptos={setListaConceptos} listaContratos={listaContratos} listaInmuebles={listaInmuebles} listaInquilinos={listaInquilinos} lecturasTemporales={lecturasTemporales} setLecturasTemporales={setLecturasTemporales} />} />
             <Route path="/emision-recibos" element={<EmisionRecibos listaRecibos={listaRecibos} setListaRecibos={setListaRecibos} listaContratos={listaContratos} listaConceptos={listaConceptos} listaInquilinos={listaInquilinos} listaInmuebles={listaInmuebles} lecturasTemporales={lecturasTemporales} setLecturasTemporales={setLecturasTemporales} />} />
             <Route path="/facturacion" element={<Facturacion listaRecibos={listaRecibos} setListaRecibos={setListaRecibos} />} />
-            <Route path="/reportes" element={<Reportes />} />
+            <Route path="/reportes" element={<Reportes listaContratos={listaContratos} listaRecibos={listaRecibos} listaInquilinos={listaInquilinos} listaInmuebles={listaInmuebles} />} />
             <Route path="/configuracion" element={<Configuracion />} />
           </Routes>
         </main>
