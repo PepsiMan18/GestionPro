@@ -120,3 +120,40 @@ button {
 .fade-in {
   animation: fadeIn 0.3s ease forwards;
 }
+
+/* Estilos de Impresión Profesional (PDF) */
+@media print {
+  .sidebar,
+  .header,
+  .btn-primary,
+  .btn-outline,
+  .dashboard-header p,
+  div[style*="overflowX: auto"] {
+    display: none !important;
+  }
+
+  body, .layout, .main-wrapper, .content, .dashboard-container {
+    background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  .table-container {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+
+  th, td {
+    color: black !important;
+    border-bottom: 1px solid #ddd !important;
+  }
+
+  .badge {
+    border: 1px solid #000 !important;
+    color: black !important;
+    background: transparent !important;
+  }
+}
