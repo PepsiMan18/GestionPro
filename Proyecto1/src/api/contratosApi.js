@@ -67,27 +67,12 @@ export async function renovarContratoApi(id, data) {
 }
 
 export async function uploadContratoPdf(id, file) {
-  // El endpoint de AWS devuelve 404 actualmente, simularemos la carga para la exposición
+  
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({ success: true, message: "PDF simulado con éxito" });
     }, 800);
   });
   
-  /* CÓDIGO REAL (Descomentar cuando el backend suba la ruta /documento)
-  const formData = new FormData();
-  formData.append('file', file);
   
-  const response = await apiFetch(`/api/contratos/${id}/documento`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': null 
-    },
-    body: formData,
-  });
-  
-  if (!response) return null;
-  if (!response.ok) throw new Error('Error al subir el documento PDF');
-  return response.json();
-  */
 }

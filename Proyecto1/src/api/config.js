@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://si-8d2b91972c694c15850c6454045d57cd.ecs.us-east-2.on.aws';
+export const API_BASE_URL = 'https://bought-treasury-appraisal-accommodations.trycloudflare.com';
 
 export function authHeaders() {
   const token = sessionStorage.getItem('token');
