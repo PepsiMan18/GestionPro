@@ -20,8 +20,8 @@ const ModalVerReciboPDF = ({
     inquilinoRelacionado = listaInquilinos.find(i => Number(i.id) === Number(contratoRelacionado.idInquilino));
   } else if (recibo.inquilino) {
     inquilinoRelacionado = listaInquilinos.find(i => 
-      (i.nombre && i.nombre.toLowerCase().includes(recibo.inquilino.toLowerCase())) ||
-      (i.razonSocial && i.razonSocial.toLowerCase().includes(recibo.inquilino.toLowerCase()))
+      (i.nombre && i.nombre.toLowerCase().trim() === recibo.inquilino.toLowerCase().trim()) ||
+      (i.razonSocial && i.razonSocial.toLowerCase().trim() === recibo.inquilino.toLowerCase().trim())
     );
   }
 
@@ -44,22 +44,101 @@ const ModalVerReciboPDF = ({
       nombreCliente = inquilinoRelacionado.nombre || recibo.inquilino;
     }
     
-    documentoCliente = inquilinoRelacionado.nroDocumento || inquilinoRelacionado.dni || inquilinoRelacionado.ruc || '09061959';
-    direccionCliente = inquilinoRelacionado.direccion || 'Av. San Carlos Mz.B, Lte.6 San Gregorio-Ate Vitarte';
+    documentoCliente = inquilinoRelacionado.numeroDocumento || 
+                       inquilinoRelacionado.nroDocumento || 
+                       inquilinoRelacionado.Nro_Documento || 
+                       inquilinoRelacionado.nro_documento || 
+                       inquilinoRelacionado.dni || 
+                       inquilinoRelacionado.ruc || 
+                       '---';
+                       
+    direccionCliente = inquilinoRelacionado.direccion || '---';
   } else {
-    documentoCliente = recibo.nroDocumento || '09061959';
-    direccionCliente = recibo.direccion || 'Av. San Carlos Mz.B, Lte.6 San Gregorio-Ate Vitarte';
+    documentoCliente = recibo.numeroDocumento || recibo.nroDocumento || recibo.dni || recibo.ruc || '---';
+    direccionCliente = recibo.direccion || '---';
   }
 
-  const nroContratoStr = contratoRelacionado 
-    ? (contratoRelacionado.codigoContrato || `CON-000${contratoRelacionado.id}`)
-    : (recibo.idContrato ? `CON-000${recibo.idContrato}` : '---');
+  // Limpiar y formatear Número de Contrato
+  let nroContratoStr = '---';
+  if (contratoRelacionado) {
+    if (contratoRelacionado.nroContrato) nroContratoStr = contratoRelacionado.nroContrato;
+    else if (contratoRelacionado.codigoContrato) nroContratoStr = contratoRelacionado.codigoContrato;
+    else if (typeof contratoRelacionado.id === 'number' && contratoRelacionado.id < 10000) {
+      nroContratoStr = `CON-${String(contratoRelacionado.id).padStart(4, '0')}`;
+    } else {
+      nroContratoStr = `CON-0001`;
+    }
+  } else if (recibo.idContrato) {
+    const idC = String(recibo.idContrato);
+    if (idC.length < 6) nroContratoStr = `CON-${idC.padStart(4, '0')}`;
+    else nroContratoStr = `CON-0001`;
+  }
 
   const esAlquiler = (recibo.tipo || '').toLowerCase().includes('alquiler');
-  const codigoInmueble = recibo.inmueble || inmuebleRelacionado?.codigo || 'PUESTO A-12';
+  const codigoInmueble = recibo.inmueble || inmuebleRelacionado?.codigo || 'S-12';
 
+  // Formateador de Fechas
+  const formatFechaEmisionHora = (fStr) => {
+    if (!fStr) return '---';
+    if (fStr.includes(':')) return fStr;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(fStr)) {
+      const [y, m, d] = fStr.split('-');
+      return `${d}/${m}/${y} 12:00:00 p.m.`;
+    }
+    return fStr;
+  };
+
+  const formatFechaVcto = (fStr) => {
+    if (!fStr) return '---';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(fStr)) {
+      const [y, m, d] = fStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    return fStr;
+  };
+
+  // Impresión con nombre de archivo sugerido al guardar en PDF
   const handlePrint = () => {
+    const originalTitle = document.title;
+    
+    // Extraer Mes (ej. Agosto)
+    let mes = 'Agosto';
+    const pStr = recibo.periodo || '';
+    if (pStr.toLowerCase().includes('agosto')) mes = 'Agosto';
+    else if (pStr.includes(' de ')) mes = pStr.split(' de ')[0].trim();
+    else if (pStr.includes('/')) {
+      const mesNum = parseInt(pStr.split('/')[0]);
+      const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      mes = meses[mesNum - 1] || 'Mes';
+    } else if (pStr) {
+      mes = pStr.split(' ')[0];
+    }
+    
+    mes = mes.charAt(0).toUpperCase() + mes.slice(1).toLowerCase();
+
+    // Extraer Local (ej. S-12 o S-25)
+    let local = codigoInmueble || 'S-12';
+    local = local.replace(/^LOCAL\s+/i, '').trim().replace(/\s+/g, '-');
+
+    // Extraer Año
+    let anio = '2026';
+    if (recibo.periodo && recibo.periodo.includes('202')) {
+      const match = recibo.periodo.match(/202\d/);
+      if (match) anio = match[0];
+    } else if (recibo.fechaEmision && recibo.fechaEmision.includes('202')) {
+      const match = recibo.fechaEmision.match(/202\d/);
+      if (match) anio = match[0];
+    }
+
+    // Nombre resultante: ej. Agosto-S-12-2026-Recibo
+    const nombreArchivo = `${mes}-${local}-${anio}-Recibo`;
+    document.title = nombreArchivo;
+
     window.print();
+
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 1000);
   };
 
   return (
@@ -175,10 +254,10 @@ const ModalVerReciboPDF = ({
             }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '8px 16px' }}>
                 <div>
-                  <strong>Fecha Emisión:</strong> {recibo.fechaEmision ? `${recibo.fechaEmision} 12:00:00a.m.` : '10/07/2023 12:00:00a.m.'}
+                  <strong>Fecha Emisión:</strong> {formatFechaEmisionHora(recibo.fechaEmision)}
                 </div>
                 <div>
-                  <strong>Fecha Vcto.:</strong> {recibo.fechaVencimiento || '17/07/2023'}
+                  <strong>Fecha Vcto.:</strong> {formatFechaVcto(recibo.fechaVencimiento)}
                 </div>
 
                 <div>
@@ -315,3 +394,4 @@ const ModalVerReciboPDF = ({
 };
 
 export default ModalVerReciboPDF;
+
