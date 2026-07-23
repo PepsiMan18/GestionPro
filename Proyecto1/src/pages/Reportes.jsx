@@ -220,9 +220,6 @@ const Reportes = ({ listaContratos = [], listaRecibos = [], listaInquilinos = []
         <div className="table-container fade-in">
           <div className="table-header">
             <h2 className="table-title">Relación de Clientes Morosos</h2>
-            <span className="badge badge-debt" style={{ fontSize: '1rem', padding: '0.5rem 1rem', background: '#fee2e2', color: '#b91c1c' }}>
-              Mora Acumulada: S/ {rep3_totalMora.toFixed(2)}
-            </span>
           </div>
           <div className="table-responsive">
             <table>

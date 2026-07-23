@@ -49,7 +49,7 @@ const Sidebar = () => {
           <li>
             <NavLink to="/facturacion" className={({isActive}) => isActive ? "sidebar-link active" : "sidebar-link"}>
               <i className="ph ph-money sidebar-icon"></i>
-              Pagos y Cobranzas
+              Gestión de Cobranzas
             </NavLink>
           </li>
           <li>
