@@ -109,11 +109,11 @@ const contratosIniciales = [
 ];
 
 const conceptosIniciales = [
-  { id: 1, descCorta: 'agua', descripcion: 'Agua', tipo: 'Variable', unidad: 'm3', importe: 0, estado: 'Habilitado' },
-  { id: 2, descCorta: 'luz', descripcion: 'Energía Eléctrica', tipo: 'Variable', unidad: 'kw', importe: 0, estado: 'Habilitado' },
-  { id: 3, descCorta: 'internet', descripcion: 'Internet', tipo: 'Fijo', unidad: '', importe: 15, estado: 'Habilitado' },
-  { id: 4, descCorta: 'vigilancia', descripcion: 'Vigilancia', tipo: 'Fijo', unidad: 'um', importe: 39, estado: 'Habilitado' },
-  { id: 5, descCorta: 'gas', descripcion: 'Gas', tipo: 'Variable', unidad: 'um', importe: 0, estado: 'Habilitado' }
+  { id: 1, descCorta: 'luz', descripcion: 'Energía Eléctrica', tipo: 'Variable', unidad: 'kw', importe: 0, estado: 'Habilitado' },
+  { id: 2, descCorta: 'agua', descripcion: 'Agua', tipo: 'Variable', unidad: 'm3', importe: 0, estado: 'Habilitado' },
+  { id: 3, descCorta: 'vigilancia', descripcion: 'Vigilancia', tipo: 'Fijo', unidad: 'MES', importe: 80, estado: 'Habilitado' },
+  { id: 4, descCorta: 'limpieza', descripcion: 'Limpieza', tipo: 'Fijo', unidad: 'MES', importe: 40, estado: 'Habilitado' },
+  { id: 5, descCorta: 'internet', descripcion: 'Internet', tipo: 'Fijo', unidad: 'MES', importe: 40, estado: 'Habilitado' }
 ];
 
 const recibosIniciales = [

@@ -85,35 +85,9 @@ const ModalEmitirRecibo = ({
         mesesGarantiaContrato: c.mesesGarantia || 1
       });
       
-      let mesesCalculados = generarMesesContrato(c.fechaInicio, c.fechaFin);
-      
-      // Filtrar meses que ya fueron cobrados (no anulados)
-      const recibosValidos = listaRecibos.filter(r => Number(r.idContrato) === Number(cid) && r.tipo === tipoRi && r.estado !== 'Anulado');
-      const mesesYaCobrados = recibosValidos.map(r => r.periodo);
-      
-      mesesCalculados = mesesCalculados.filter(m => !mesesYaCobrados.includes(m));
-      
-      if (tipoRi === 'Consumo de servicios') {
-         const hoy = new Date();
-         const mesActual = hoy.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-         const actualCap = mesActual.charAt(0).toUpperCase() + mesActual.slice(1);
-         
-         const pasado = new Date();
-         pasado.setMonth(pasado.getMonth() - 1);
-         const mesPasado = pasado.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
-         const pasadoCap = mesPasado.charAt(0).toUpperCase() + mesPasado.slice(1);
-         
-         mesesCalculados = mesesCalculados.filter(m => m === actualCap || m === pasadoCap);
-         
-         if (mesesCalculados.length === 0) {
-             const ultimo = generarMesesContrato(c.fechaInicio, c.fechaFin).pop();
-             if (ultimo && !mesesYaCobrados.includes(ultimo)) mesesCalculados.push(ultimo);
-         }
-      }
-      
-      setMesesDisponibles(mesesCalculados);
-      if (mesesCalculados.length > 0) {
-        setPeriodo(mesesCalculados[mesesCalculados.length - 1]);
+      setMesesDisponibles(generarMesesContrato(c.fechaInicio, c.fechaFin));
+      if (generarMesesContrato(c.fechaInicio, c.fechaFin).length > 0) {
+        setPeriodo(generarMesesContrato(c.fechaInicio, c.fechaFin)[0]);
       } else {
         setPeriodo('Todos los meses cobrados');
       }
@@ -145,6 +119,38 @@ const ModalEmitirRecibo = ({
           importeCalculado: montoAlquiler * numG,
           mesesGarantia: numG
         }]);
+        setMostrarDetalle(true);
+      } else if (tipoRi === 'Consumo de servicios') {
+        const habilitados = (listaConceptos || []).filter(c => c.estado === 'Habilitado');
+        const temps = (lecturasTemporales && lecturasTemporales[cid]) ? lecturasTemporales[cid] : {};
+
+        const preparados = habilitados.map(c => {
+          let inicial = 0;
+          let final = 0;
+          if (c.tipo === 'Variable' && temps[c.id]) {
+            inicial = parseFloat(temps[c.id].lecturaInicial) || 0;
+            final = parseFloat(temps[c.id].lecturaFinal) || 0;
+          }
+          
+          const consumo = Math.max(0, final - inicial);
+          let precio = 1;
+          if (c.descCorta?.toLowerCase().includes('agua')) precio = PRECIO_UNITARIO_AGUA;
+          else if (c.descCorta?.toLowerCase().includes('luz') || c.descCorta?.toLowerCase().includes('energ')) precio = PRECIO_UNITARIO_LUZ;
+          
+          let impFijo = c.importe;
+          if (c.tipo === 'Fijo' && temps[c.id] && temps[c.id].importeFijo !== undefined) {
+            impFijo = parseFloat(temps[c.id].importeFijo);
+          }
+
+          return {
+            ...c,
+            lecturaInicial: c.tipo === 'Variable' ? inicial : null,
+            lecturaFinal: c.tipo === 'Variable' ? final : null,
+            importeCalculado: c.tipo === 'Fijo' ? impFijo : (consumo * precio)
+          };
+        });
+
+        setConceptosActivos(preparados);
         setMostrarDetalle(true);
       } else {
         setMostrarDetalle(false);
@@ -192,7 +198,7 @@ const ModalEmitirRecibo = ({
   const activarDetalle = () => {
     setIsLoadingGlobal(true);
     setTimeout(() => {
-      const habilitados = listaConceptos.filter(c => c.estado === 'Habilitado');
+      const habilitados = (listaConceptos || []).filter(c => c.estado === 'Habilitado');
       const temps = (lecturasTemporales && lecturasTemporales[contratoId]) ? lecturasTemporales[contratoId] : {};
       
       const preparados = habilitados.map(c => {
@@ -205,20 +211,25 @@ const ModalEmitirRecibo = ({
         
         const consumo = Math.max(0, final - inicial);
         let precio = 1;
-        if (c.descCorta.toLowerCase().includes('agua')) precio = PRECIO_UNITARIO_AGUA;
-        else if (c.descCorta.toLowerCase().includes('luz') || c.descCorta.toLowerCase().includes('energ')) precio = PRECIO_UNITARIO_LUZ;
+        if (c.descCorta?.toLowerCase().includes('agua')) precio = PRECIO_UNITARIO_AGUA;
+        else if (c.descCorta?.toLowerCase().includes('luz') || c.descCorta?.toLowerCase().includes('energ')) precio = PRECIO_UNITARIO_LUZ;
         
+        let impFijo = c.importe;
+        if (c.tipo === 'Fijo' && temps[c.id] && temps[c.id].importeFijo !== undefined) {
+          impFijo = parseFloat(temps[c.id].importeFijo);
+        }
+
         return {
           ...c,
           lecturaInicial: c.tipo === 'Variable' ? inicial : null,
           lecturaFinal: c.tipo === 'Variable' ? final : null,
-          importeCalculado: c.tipo === 'Fijo' ? c.importe : (consumo * precio)
+          importeCalculado: c.tipo === 'Fijo' ? impFijo : (consumo * precio)
         };
       });
       setConceptosActivos(preparados);
       setMostrarDetalle(true);
       setIsLoadingGlobal(false);
-    }, 800); // Simulando red
+    }, 400);
   };
 
   const handleLecturaChange = (id, campo, valor) => {

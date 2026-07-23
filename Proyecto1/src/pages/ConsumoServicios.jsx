@@ -204,45 +204,71 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                     </tr>
                   </thead>
                   <tbody>
-                    {conceptosActivos.map(concepto => (
-                      <tr key={concepto.id}>
-                        <td><strong>{concepto.descripcion}</strong></td>
-                        <td>
-                          <span className={`badge ${concepto.tipo === 'Fijo' ? 'badge-primary' : 'badge-warning'}`}>
-                            {concepto.tipo}
-                          </span>
-                        </td>
-                        <td>
-                          {concepto.tipo === 'Fijo' ? (
-                            <span className="text-muted">S/ {Number(concepto.importe).toFixed(2)} / mes</span>
-                          ) : (
-                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                              <input 
-                                type="number" 
-                                className="form-control" 
-                                style={{ width: '80px', padding: '0.3rem' }} 
-                                placeholder="Inicial" 
-                                value={lecturasActivas[concepto.id]?.lecturaInicial || ''}
-                                onChange={(e) => handleLecturaTemporalChange(concepto.id, 'lecturaInicial', e.target.value)}
-                              />
-                              <span>-</span>
-                              <input 
-                                type="number" 
-                                className="form-control" 
-                                style={{ width: '80px', padding: '0.3rem' }} 
-                                placeholder="Final" 
-                                value={lecturasActivas[concepto.id]?.lecturaFinal || ''}
-                                onChange={(e) => handleLecturaTemporalChange(concepto.id, 'lecturaFinal', e.target.value)}
-                              />
-                              <span className="text-muted">{concepto.unidad}</span>
-                            </div>
-                          )}
-                        </td>
-                        <td>
-                          {concepto.tipo === 'Fijo' ? `S/ ${Number(concepto.importe).toFixed(2)}` : <span className="text-muted">Calculado al emitir recibo</span>}
-                        </td>
-                      </tr>
-                    ))}
+                    {conceptosActivos.map(concepto => {
+                      const esFijo = concepto.tipo === 'Fijo';
+                      const valInicial = lecturasActivas[concepto.id]?.lecturaInicial ?? '';
+                      const valFinal = lecturasActivas[concepto.id]?.lecturaFinal ?? '';
+                      const valFijo = lecturasActivas[concepto.id]?.importeFijo ?? concepto.importe;
+                      
+                      let costoEst = 'Calculado al emitir recibo';
+                      if (esFijo) {
+                        costoEst = `S/ ${Number(valFijo).toFixed(2)}`;
+                      } else if (valInicial !== '' && valFinal !== '' && parseFloat(valFinal) >= parseFloat(valInicial)) {
+                        const consumo = parseFloat(valFinal) - parseFloat(valInicial);
+                        const precioUnit = concepto.descCorta?.toLowerCase().includes('agua') ? 2.50 : 1.20;
+                        costoEst = `S/ ${(consumo * precioUnit).toFixed(2)} (${consumo} ${concepto.unidad})`;
+                      }
+
+                      return (
+                        <tr key={concepto.id}>
+                          <td><strong>{concepto.descripcion}</strong></td>
+                          <td>
+                            <span className={`badge ${esFijo ? 'badge-primary' : 'badge-warning'}`}>
+                              {esFijo ? 'FIJO' : 'CONSUMO'}
+                            </span>
+                          </td>
+                          <td>
+                            {esFijo ? (
+                              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                <span>S/</span>
+                                <input 
+                                  type="number" 
+                                  className="form-control" 
+                                  style={{ width: '100px', padding: '0.3rem' }} 
+                                  value={valFijo}
+                                  onChange={(e) => handleLecturaTemporalChange(concepto.id, 'importeFijo', parseFloat(e.target.value) || 0)}
+                                />
+                                <span className="text-muted">/ mes</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                <input 
+                                  type="number" 
+                                  className="form-control" 
+                                  style={{ width: '80px', padding: '0.3rem' }} 
+                                  placeholder="Inicial" 
+                                  value={valInicial}
+                                  onChange={(e) => handleLecturaTemporalChange(concepto.id, 'lecturaInicial', e.target.value)}
+                                />
+                                <span>-</span>
+                                <input 
+                                  type="number" 
+                                  className="form-control" 
+                                  style={{ width: '80px', padding: '0.3rem' }} 
+                                  placeholder="Final" 
+                                  value={valFinal}
+                                  onChange={(e) => handleLecturaTemporalChange(concepto.id, 'lecturaFinal', e.target.value)}
+                                />
+                                <span className="text-muted">{concepto.unidad}</span>
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <strong>{costoEst}</strong>
+                          </td>
+                        </tr>
+                      );
+                    })}
                     {conceptosActivos.length === 0 && (
                       <tr>
                         <td colSpan="4" className="text-center py-3">No hay servicios habilitados en el tarifario.</td>
