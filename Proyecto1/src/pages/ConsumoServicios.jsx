@@ -1,64 +1,18 @@
 import React, { useState } from 'react';
 
-const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, listaInmuebles, listaInquilinos, lecturasTemporales, setLecturasTemporales }) => {
-  // === ESTADOS PARA TARIFARIO (CONCEPTOS) ===
-  const [showTarifarioModal, setShowTarifarioModal] = useState(false);
-  const [showConceptoForm, setShowConceptoForm] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentConcepto, setCurrentConcepto] = useState(null);
-  const [formData, setFormData] = useState({
-    descCorta: '', descripcion: '', tipo: 'Fijo', unidad: '', importe: 0, estado: 'Habilitado'
-  });
+export const SERVICIOS_OFICIALES = [
+  { id: 1, descCorta: 'luz', descripcion: 'Energía Eléctrica', tipo: 'Variable', unidad: 'kw', importe: 0 },
+  { id: 2, descCorta: 'agua', descripcion: 'Agua', tipo: 'Variable', unidad: 'm3', importe: 0 },
+  { id: 3, descCorta: 'vigilancia', descripcion: 'Vigilancia', tipo: 'Fijo', unidad: 'MES', importe: 80 },
+  { id: 4, descCorta: 'limpieza', descripcion: 'Limpieza', tipo: 'Fijo', unidad: 'MES', importe: 40 },
+  { id: 5, descCorta: 'internet', descripcion: 'Internet', tipo: 'Fijo', unidad: 'MES', importe: 40 }
+];
 
-  // === ESTADOS PARA REGISTRAR CONSUMOS ===
+const ConsumoServicios = ({ listaContratos, listaInmuebles, listaInquilinos, lecturasTemporales, setLecturasTemporales }) => {
   const [showConsumoModal, setShowConsumoModal] = useState(false);
   const [contratoSeleccionado, setContratoSeleccionado] = useState(null);
   const [lecturasActivas, setLecturasActivas] = useState({});
 
-  // === LÓGICA TARIFARIO ===
-  const handleOpenConceptoForm = (concepto = null) => {
-    if (concepto) {
-      setIsEditing(true);
-      setCurrentConcepto(concepto);
-      setFormData(concepto);
-    } else {
-      setIsEditing(false);
-      setCurrentConcepto(null);
-      setFormData({ descCorta: '', descripcion: '', tipo: 'Fijo', unidad: '', importe: 0, estado: 'Habilitado' });
-    }
-    setShowConceptoForm(true);
-  };
-
-  const handleCloseConceptoForm = () => {
-    setShowConceptoForm(false);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleConceptoSubmit = (e) => {
-    e.preventDefault();
-    if (isEditing) {
-      setListaConceptos(listaConceptos.map(c => c.id === currentConcepto.id ? { ...formData, id: currentConcepto.id, importe: parseFloat(formData.importe) || 0 } : c));
-    } else {
-      setListaConceptos([...listaConceptos, { ...formData, id: Date.now(), importe: parseFloat(formData.importe) || 0 }]);
-    }
-    handleCloseConceptoForm();
-  };
-
-  const toggleEstado = (id) => {
-    setListaConceptos(listaConceptos.map(c => {
-      if (c.id === id) {
-        return { ...c, estado: c.estado === 'Habilitado' ? 'Deshabilitado' : 'Habilitado' };
-      }
-      return c;
-    }));
-  };
-
-  // === LÓGICA CONTRATOS VIGENTES ===
-  // Safely fallback to empty arrays if undefined initially
   const contratos = listaContratos || [];
   const inmuebles = listaInmuebles || [];
   const inquilinos = listaInquilinos || [];
@@ -86,7 +40,6 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
     
     const temps = (lecturasTemporales && lecturasTemporales[contrato.id]) ? lecturasTemporales[contrato.id] : {};
     setLecturasActivas(temps);
-    
     setShowConsumoModal(true);
   };
 
@@ -113,24 +66,17 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
         [contratoSeleccionado.id]: lecturasActivas
       }));
     }
-    alert('Consumos guardados temporalmente. Podrás procesarlos al emitir el recibo de este mes.');
+    alert('Consumos guardados temporalmente. Podrás procesarlos al emitir el recibo.');
     handleCloseConsumoModal();
   };
-
-  // Filtra los servicios habilitados
-  const conceptosActivos = (listaConceptos || []).filter(c => c.estado === 'Habilitado');
 
   return (
     <div className="page-container">
       <div className="page-header">
         <div>
           <h1 className="page-title">Consumo de Servicios por Inmueble</h1>
-          <p className="page-subtitle">Selecciona un inmueble con contrato para registrar lecturas o ver tarifas</p>
+          <p className="page-subtitle">Selecciona un inmueble con contrato para registrar lecturas o consultar servicios</p>
         </div>
-        <button className="btn-outline" onClick={() => setShowTarifarioModal(true)}>
-          <i className="ph ph-gear"></i>
-          Configurar Tarifario
-        </button>
       </div>
 
       <div className="card">
@@ -191,7 +137,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                 <p style={{ margin: '0' }}><strong>Contrato:</strong> #{contratoSeleccionado.id}</p>
               </div>
 
-              <h4 style={{ marginBottom: '1rem' }}>Servicios Aplicables (Habilitados)</h4>
+              <h4 style={{ marginBottom: '1rem' }}>Servicios Aplicables</h4>
               
               <div className="table-responsive">
                 <table className="data-table" style={{ fontSize: '0.9rem' }}>
@@ -204,7 +150,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                     </tr>
                   </thead>
                   <tbody>
-                    {conceptosActivos.map(concepto => {
+                    {SERVICIOS_OFICIALES.map(concepto => {
                       const esFijo = concepto.tipo === 'Fijo';
                       const valInicial = lecturasActivas[concepto.id]?.lecturaInicial ?? '';
                       const valFinal = lecturasActivas[concepto.id]?.lecturaFinal ?? '';
@@ -215,7 +161,7 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                         costoEst = `S/ ${Number(valFijo).toFixed(2)}`;
                       } else if (valInicial !== '' && valFinal !== '' && parseFloat(valFinal) >= parseFloat(valInicial)) {
                         const consumo = parseFloat(valFinal) - parseFloat(valInicial);
-                        const precioUnit = concepto.descCorta?.toLowerCase().includes('agua') ? 2.50 : 1.20;
+                        const precioUnit = concepto.descCorta === 'agua' ? 2.50 : 1.20;
                         costoEst = `S/ ${(consumo * precioUnit).toFixed(2)} (${consumo} ${concepto.unidad})`;
                       }
 
@@ -269,11 +215,6 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                         </tr>
                       );
                     })}
-                    {conceptosActivos.length === 0 && (
-                      <tr>
-                        <td colSpan="4" className="text-center py-3">No hay servicios habilitados en el tarifario.</td>
-                      </tr>
-                    )}
                   </tbody>
                 </table>
               </div>
@@ -284,134 +225,6 @@ const ConsumoServicios = ({ listaConceptos, setListaConceptos, listaContratos, l
                   Guardar Lecturas
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: CONFIGURAR TARIFARIO (Antigua vista principal) */}
-      {showTarifarioModal && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '800px' }}>
-            <div className="modal-header">
-              <h2>Configurar Tarifario de Servicios</h2>
-              <button className="btn-icon" onClick={() => setShowTarifarioModal(false)}>
-                <i className="ph ph-x"></i>
-              </button>
-            </div>
-            
-            <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                <button className="btn-primary" onClick={() => handleOpenConceptoForm()}>
-                  <i className="ph ph-plus"></i>
-                  Nuevo Concepto
-                </button>
-              </div>
-
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Desc.</th>
-                    <th>Tipo</th>
-                    <th>Unidad</th>
-                    <th>Importe</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listaConceptos.map((concepto) => (
-                    <tr key={concepto.id}>
-                      <td>{concepto.descripcion}</td>
-                      <td>
-                        <span className={`badge ${concepto.tipo === 'Fijo' ? 'badge-primary' : 'badge-warning'}`}>
-                          {concepto.tipo}
-                        </span>
-                      </td>
-                      <td>{concepto.unidad || '-'}</td>
-                      <td>{concepto.tipo === 'Fijo' ? `S/ ${Number(concepto.importe).toFixed(2)}` : '-'}</td>
-                      <td>
-                        <span className={`badge ${concepto.estado === 'Habilitado' ? 'badge-success' : 'badge-error'}`}>
-                          {concepto.estado}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button className="btn-icon" title="Editar" onClick={() => handleOpenConceptoForm(concepto)}>
-                            <i className="ph ph-pencil-simple"></i>
-                          </button>
-                          <button 
-                            className="btn-icon" 
-                            title={concepto.estado === 'Habilitado' ? 'Deshabilitar' : 'Habilitar'} 
-                            onClick={() => toggleEstado(concepto.id)}
-                          >
-                            <i className={`ph ${concepto.estado === 'Habilitado' ? 'ph-x-circle' : 'ph-check-circle'}`}></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                  {listaConceptos.length === 0 && (
-                    <tr>
-                      <td colSpan="6" className="text-center py-4">No hay conceptos registrados</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: FORMULARIO NUEVO/EDITAR CONCEPTO */}
-      {showConceptoForm && (
-        <div className="modal-overlay" style={{ zIndex: 1001 }}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <h2>{isEditing ? 'Editar Concepto' : 'Nuevo Concepto'}</h2>
-              <button className="btn-icon" onClick={handleCloseConceptoForm}>
-                <i className="ph ph-x"></i>
-              </button>
-            </div>
-            <div className="modal-body">
-              <form onSubmit={handleConceptoSubmit} className="form-grid">
-                <div className="form-group">
-                  <label>Abreviación (Desc_Corta)</label>
-                  <input type="text" name="descCorta" className="form-control" value={formData.descCorta} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                  <label>Descripción Larga</label>
-                  <input type="text" name="descripcion" className="form-control" value={formData.descripcion} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                  <label>Tipo de Consumo</label>
-                  <select name="tipo" className="form-control" value={formData.tipo} onChange={handleChange}>
-                    <option value="Fijo">Fijo</option>
-                    <option value="Variable">Variable</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Unidad de Medida</label>
-                  <input type="text" name="unidad" className="form-control" value={formData.unidad} onChange={handleChange} placeholder="Ej. m3, kw, um" />
-                </div>
-                {formData.tipo === 'Fijo' && (
-                  <div className="form-group">
-                    <label>Importe Mensual Fijo</label>
-                    <input type="number" step="0.01" name="importe" className="form-control" value={formData.importe} onChange={handleChange} required />
-                  </div>
-                )}
-                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                  <label>Estado</label>
-                  <select name="estado" className="form-control" value={formData.estado} onChange={handleChange}>
-                    <option value="Habilitado">Habilitado</option>
-                    <option value="Deshabilitado">Deshabilitado</option>
-                  </select>
-                </div>
-                <div className="form-actions" style={{ gridColumn: '1 / -1' }}>
-                  <button type="button" className="btn-outline" onClick={handleCloseConceptoForm}>Cancelar</button>
-                  <button type="submit" className="btn-primary">Grabar</button>
-                </div>
-              </form>
             </div>
           </div>
         </div>

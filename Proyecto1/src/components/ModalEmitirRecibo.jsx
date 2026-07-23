@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createReciboConsumo, agregarDetalleRecibo } from '../api/recibosApi';
+import { SERVICIOS_OFICIALES } from '../pages/ConsumoServicios';
 
 const ModalEmitirRecibo = ({ 
   onClose, 
@@ -121,10 +122,9 @@ const ModalEmitirRecibo = ({
         }]);
         setMostrarDetalle(true);
       } else if (tipoRi === 'Consumo de servicios') {
-        const habilitados = (listaConceptos || []).filter(c => c.estado === 'Habilitado');
         const temps = (lecturasTemporales && lecturasTemporales[cid]) ? lecturasTemporales[cid] : {};
 
-        const preparados = habilitados.map(c => {
+        const preparados = SERVICIOS_OFICIALES.map(c => {
           let inicial = 0;
           let final = 0;
           if (c.tipo === 'Variable' && temps[c.id]) {
@@ -134,8 +134,8 @@ const ModalEmitirRecibo = ({
           
           const consumo = Math.max(0, final - inicial);
           let precio = 1;
-          if (c.descCorta?.toLowerCase().includes('agua')) precio = PRECIO_UNITARIO_AGUA;
-          else if (c.descCorta?.toLowerCase().includes('luz') || c.descCorta?.toLowerCase().includes('energ')) precio = PRECIO_UNITARIO_LUZ;
+          if (c.descCorta === 'agua') precio = PRECIO_UNITARIO_AGUA;
+          else if (c.descCorta === 'luz') precio = PRECIO_UNITARIO_LUZ;
           
           let impFijo = c.importe;
           if (c.tipo === 'Fijo' && temps[c.id] && temps[c.id].importeFijo !== undefined) {
@@ -198,10 +198,9 @@ const ModalEmitirRecibo = ({
   const activarDetalle = () => {
     setIsLoadingGlobal(true);
     setTimeout(() => {
-      const habilitados = (listaConceptos || []).filter(c => c.estado === 'Habilitado');
       const temps = (lecturasTemporales && lecturasTemporales[contratoId]) ? lecturasTemporales[contratoId] : {};
       
-      const preparados = habilitados.map(c => {
+      const preparados = SERVICIOS_OFICIALES.map(c => {
         let inicial = 0;
         let final = 0;
         if (c.tipo === 'Variable' && temps[c.id]) {
@@ -211,8 +210,8 @@ const ModalEmitirRecibo = ({
         
         const consumo = Math.max(0, final - inicial);
         let precio = 1;
-        if (c.descCorta?.toLowerCase().includes('agua')) precio = PRECIO_UNITARIO_AGUA;
-        else if (c.descCorta?.toLowerCase().includes('luz') || c.descCorta?.toLowerCase().includes('energ')) precio = PRECIO_UNITARIO_LUZ;
+        if (c.descCorta === 'agua') precio = PRECIO_UNITARIO_AGUA;
+        else if (c.descCorta === 'luz') precio = PRECIO_UNITARIO_LUZ;
         
         let impFijo = c.importe;
         if (c.tipo === 'Fijo' && temps[c.id] && temps[c.id].importeFijo !== undefined) {
