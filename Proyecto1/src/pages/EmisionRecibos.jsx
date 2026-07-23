@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import ModalEmitirRecibo from '../components/ModalEmitirRecibo';
+import ModalVerReciboPDF from '../components/ModalVerReciboPDF';
 import { anularReciboApi } from '../api/recibosApi';
 
 const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaConceptos, listaInquilinos, listaInmuebles, lecturasTemporales, setLecturasTemporales }) => {
   const [showModal, setShowModal] = useState(false);
+  const [selectedReciboPDF, setSelectedReciboPDF] = useState(null);
   const [filtroNro, setFiltroNro] = useState('');
   const [filtroInquilino, setFiltroInquilino] = useState('');
   const [filtroFecha, setFiltroFecha] = useState('');
@@ -123,8 +125,8 @@ const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaCo
                     <div className="action-buttons">
                       <button 
                         className="btn-icon" 
-                        title="Ver detalle" 
-                        onClick={() => alert('Visualizar detalle PDF no implementado aún.')}
+                        title="Ver detalle PDF" 
+                        onClick={() => setSelectedReciboPDF(recibo)}
                       >
                         <i className="ph ph-eye"></i>
                       </button>
@@ -165,8 +167,19 @@ const EmisionRecibos = ({ listaRecibos, setListaRecibos, listaContratos, listaCo
           setLecturasTemporales={setLecturasTemporales}
         />
       )}
+
+      {selectedReciboPDF && (
+        <ModalVerReciboPDF 
+          recibo={selectedReciboPDF}
+          onClose={() => setSelectedReciboPDF(null)}
+          listaContratos={listaContratos}
+          listaInquilinos={listaInquilinos}
+          listaInmuebles={listaInmuebles}
+        />
+      )}
     </div>
   );
 };
 
 export default EmisionRecibos;
+
