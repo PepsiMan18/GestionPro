@@ -25,6 +25,7 @@ const ModalEmitirRecibo = ({
   
   const [mostrarDetalle, setMostrarDetalle] = useState(false);
   const [conceptosActivos, setConceptosActivos] = useState([]);
+  const [mesesGarantiaCobro, setMesesGarantiaCobro] = useState(0);
   
   // Precio unitario inventado para el cálculo de consumo variable
   const PRECIO_UNITARIO_AGUA = 2.50; 
@@ -72,9 +73,16 @@ const ModalEmitirRecibo = ({
       const c = listaContratos.find(c => Number(c.id) === Number(cid));
       const inq = listaInquilinos.find(i => Number(i.id) === Number(c.idInquilino));
       const inm = listaInmuebles.find(i => Number(i.id) === Number(c.idInmueble));
+
+      const montoAlquiler = parseFloat(c.monto) || 0;
+      const numGarDef = tipoRi === 'Garantía de Alquiler' ? (parseInt(c.mesesGarantia) || 1) : 0;
+      setMesesGarantiaCobro(numGarDef);
+
       setDatosContrato({
         inquilino: c.nombreInquilino || (inq ? inq.nombre || inq.razonSocial : 'Desconocido'),
         inmueble: c.codigoInmueble || (inm ? inm.codigo : 'Desconocido'),
+        monto: montoAlquiler,
+        mesesGarantiaContrato: c.mesesGarantia || 1
       });
       
       let mesesCalculados = generarMesesContrato(c.fechaInicio, c.fechaFin);
@@ -111,12 +119,31 @@ const ModalEmitirRecibo = ({
       }
       
       if (tipoRi === 'Alquiler de Inmueble') {
-        const montoAlquiler = parseFloat(c.monto) || 0;
-        setConceptosActivos([{
+        let conceptos = [{
           id: 'alquiler',
           descripcion: 'Alquiler de Inmueble (Mes Adelantado)',
           tipo: 'Fijo',
           importeCalculado: montoAlquiler
+        }];
+        if (numGarDef > 0) {
+          conceptos.push({
+            id: 'garantia',
+            descripcion: `Garantía de Alquiler (${numGarDef} ${numGarDef === 1 ? 'Mes' : 'Meses'} de Garantía)`,
+            tipo: 'Fijo',
+            importeCalculado: montoAlquiler * numGarDef,
+            mesesGarantia: numGarDef
+          });
+        }
+        setConceptosActivos(conceptos);
+        setMostrarDetalle(true);
+      } else if (tipoRi === 'Garantía de Alquiler') {
+        const numG = numGarDef || 1;
+        setConceptosActivos([{
+          id: 'garantia',
+          descripcion: `Garantía de Alquiler (${numG} ${numG === 1 ? 'Mes' : 'Meses'} de Garantía)`,
+          tipo: 'Fijo',
+          importeCalculado: montoAlquiler * numG,
+          mesesGarantia: numG
         }]);
         setMostrarDetalle(true);
       } else {
@@ -129,6 +156,37 @@ const ModalEmitirRecibo = ({
       setConceptosActivos([]);
       setMesesDisponibles([]);
     }
+  };
+
+  const handleGarantiaChange = (numGar) => {
+    setMesesGarantiaCobro(numGar);
+    if (!contratoId) return;
+    const c = listaContratos.find(c => Number(c.id) === Number(contratoId));
+    if (!c) return;
+    const montoAlquiler = parseFloat(c.monto) || 0;
+
+    let conceptos = [];
+    if (tipoRi === 'Alquiler de Inmueble') {
+      conceptos.push({
+        id: 'alquiler',
+        descripcion: 'Alquiler de Inmueble (Mes Adelantado)',
+        tipo: 'Fijo',
+        importeCalculado: montoAlquiler
+      });
+    }
+
+    if (numGar > 0) {
+      conceptos.push({
+        id: 'garantia',
+        descripcion: `Garantía de Alquiler (${numGar} ${numGar === 1 ? 'Mes' : 'Meses'} de Garantía)`,
+        tipo: 'Fijo',
+        importeCalculado: montoAlquiler * numGar,
+        mesesGarantia: numGar
+      });
+    }
+
+    setConceptosActivos(conceptos);
+    setMostrarDetalle(true);
   };
 
   const activarDetalle = () => {
@@ -336,7 +394,30 @@ const ModalEmitirRecibo = ({
                     </div>
                     <div>
                       <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', color: tipoRi === 'Alquiler de Inmueble' ? 'var(--primary)' : 'var(--text-main)' }}>Alquiler de Inmueble</h3>
-                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cuota mensual por el arrendamiento del local u oficina.</p>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cuota mensual por el arrendamiento del local u oficina (con opción a incluir garantía).</p>
+                    </div>
+                  </div>
+
+                  <div 
+                    onClick={() => setTipoRi('Garantía de Alquiler')}
+                    style={{ 
+                      padding: '1.25rem', 
+                      borderRadius: 'var(--radius-md)', 
+                      border: tipoRi === 'Garantía de Alquiler' ? '2px solid var(--primary)' : '1px solid var(--border-color)', 
+                      backgroundColor: tipoRi === 'Garantía de Alquiler' ? 'var(--primary-light)' : 'var(--bg-body)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    <div style={{ fontSize: '2.5rem', color: tipoRi === 'Garantía de Alquiler' ? 'var(--primary)' : 'var(--text-muted)' }}>
+                      <i className="ph ph-shield-check"></i>
+                    </div>
+                    <div>
+                      <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', color: tipoRi === 'Garantía de Alquiler' ? 'var(--primary)' : 'var(--text-main)' }}>Garantía de Alquiler</h3>
+                      <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Cobro exclusivo de depósito en garantía (1 o 2 meses).</p>
                     </div>
                   </div>
 
@@ -409,6 +490,21 @@ const ModalEmitirRecibo = ({
                       )}
                     </select>
                   </div>
+                  
+                  {(tipoRi === 'Alquiler de Inmueble' || tipoRi === 'Garantía de Alquiler') && (
+                    <div className="form-group">
+                      <label>Meses de Garantía</label>
+                      <select 
+                        className="form-control" 
+                        value={mesesGarantiaCobro} 
+                        onChange={(e) => handleGarantiaChange(parseInt(e.target.value))}
+                      >
+                        {tipoRi === 'Alquiler de Inmueble' && <option value="0">Sin Garantía (Solo Alquiler)</option>}
+                        <option value="1">1 Mes de Garantía (S/ {(datosContrato.monto || 0).toFixed(2)})</option>
+                        <option value="2">2 Meses de Garantía (S/ {((datosContrato.monto || 0) * 2).toFixed(2)})</option>
+                      </select>
+                    </div>
+                  )}
                   
                   <div className="form-group" style={{ gridColumn: '1 / -1', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <h4>Detalle de Conceptos</h4>

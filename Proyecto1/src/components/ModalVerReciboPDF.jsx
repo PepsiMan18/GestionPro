@@ -80,7 +80,9 @@ const ModalVerReciboPDF = ({
     else nroContratoStr = `CON-0001`;
   }
 
-  const esAlquiler = (recibo.tipo || '').toLowerCase().includes('alquiler');
+  const esAlquiler = (recibo.tipo || '').toLowerCase().includes('alquiler') || 
+                     (recibo.tipo || '').toLowerCase().includes('garantía') || 
+                     (recibo.tipo || '').toLowerCase().includes('garantia');
   const codigoInmueble = recibo.inmueble || inmuebleRelacionado?.codigo || 'S-12';
 
   // Formateador de Fechas
@@ -328,19 +330,51 @@ const ModalVerReciboPDF = ({
               </thead>
               <tbody>
                 {esAlquiler ? (
-                  <tr>
-                    <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>1</td>
-                    <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>MES</td>
-                    <td style={{ border: '1px solid #000', padding: '8px' }}>
-                      ALQUILER {codigoInmueble.toUpperCase()} - CORRESPONDIENTE AL MES DE {(recibo.periodo || 'JUNIO').toUpperCase()}
-                    </td>
-                    <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'right' }}>
-                      {Number(recibo.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-                    <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'right' }}>
-                      {Number(recibo.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-                  </tr>
+                  (recibo.detalle && recibo.detalle.length > 0) ? (
+                    recibo.detalle.map((item, idx) => {
+                      const descUpper = (item.descripcion || '').toUpperCase();
+                      const esGarantia = item.id === 'garantia' || descUpper.includes('GARANTÍA') || descUpper.includes('GARANTIA');
+                      
+                      let textoDesc = `ALQUILER ${codigoInmueble.toUpperCase()} - CORRESPONDIENTE AL MES DE ${(recibo.periodo || 'JUNIO').toUpperCase()}`;
+                      if (esGarantia) {
+                        textoDesc = `${descUpper} - LOCAL ${codigoInmueble.toUpperCase()}`;
+                      }
+
+                      return (
+                        <tr key={idx}>
+                          <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>{idx + 1}</td>
+                          <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>MES</td>
+                          <td style={{ border: '1px solid #000', padding: '8px' }}>
+                            <strong>{textoDesc}</strong>
+                          </td>
+                          <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'right' }}>
+                            {Number(item.importeCalculado || item.importe || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                          <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'right' }}>
+                            {Number(item.importeCalculado || item.importe || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>1</td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>MES</td>
+                      <td style={{ border: '1px solid #000', padding: '8px' }}>
+                        {(recibo.tipo || '').toLowerCase().includes('garantía') || (recibo.tipo || '').toLowerCase().includes('garantia') ? (
+                          <strong>GARANTÍA DE ALQUILER ({recibo.mesesGarantia || 1} MES(ES) DE GARANTÍA) - LOCAL {codigoInmueble.toUpperCase()}</strong>
+                        ) : (
+                          <strong>ALQUILER {codigoInmueble.toUpperCase()} - CORRESPONDIENTE AL MES DE {(recibo.periodo || 'JUNIO').toUpperCase()}</strong>
+                        )}
+                      </td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'right' }}>
+                        {Number(recibo.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+                      <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'right' }}>
+                        {Number(recibo.total || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                  )
                 ) : (
                   // Recibo por Servicios (Un ítem por cada suministro usado: Luz, Agua, Gas, Vigilancia, Internet, Mantenimiento)
                   (recibo.detalle && recibo.detalle.length > 0) ? (
