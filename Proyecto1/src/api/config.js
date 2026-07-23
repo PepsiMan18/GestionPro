@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://bought-treasury-appraisal-accommodations.trycloudflare.com';
+export const API_BASE_URL = 'https://kernel-declared-naples-elimination.trycloudflare.com';
 
 export function authHeaders() {
   const token = sessionStorage.getItem('token');
